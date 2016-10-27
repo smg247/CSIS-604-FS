@@ -2,16 +2,19 @@ package filesystems.safs.commands;
 
 
 import com.sun.istack.internal.Nullable;
-import filesystems.safs.NodeType;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public enum CommandType {
+    help(new HelpCommand()),
     touch(new TouchCommand()),
     mv(new MVCommand()),
     cp(new CPCommand());
 
 
     @Nullable
-    public static CommandType getCommandTypeByName(String name) {
+    private static CommandType getCommandTypeByName(String name) {
         for (CommandType commandType : values()) {
             if (name.equals(commandType.getName())) {
                 return commandType;
@@ -21,6 +24,29 @@ public enum CommandType {
         return null;
     }
 
+    public static String executeCommand(String rawCommand, boolean isMaster) {
+        String[] commandWithArguments = rawCommand.split("\\s+");
+        CommandType commandType = null;
+        if (commandWithArguments.length > 0) {
+            commandType = getCommandTypeByName(commandWithArguments[0]);
+        }
+        if (commandType == null) {
+            System.out.println("Invalid Command!");
+            commandType = help;
+        }
+
+        String[] arguments = null;
+        if (commandWithArguments.length > 1) {
+            arguments = Arrays.copyOfRange(commandWithArguments, 1, commandWithArguments.length);
+        }
+
+        if (isMaster) {
+            return commandType.executeOnMaster(arguments);
+        } else {
+            return commandType.executeOnSlave(arguments);
+        }
+    }
+
 
     private Command command;
 
@@ -28,8 +54,30 @@ public enum CommandType {
         this.command = command;
     }
 
-    public void execute(NodeType nodeType, String... arguments) {
-        command.execute(nodeType, arguments);
+    public String executeOnMaster(String... arguments) {
+        if (command.hasValidArguments(arguments)) {
+            try {
+                return command.executeOnMaster(arguments);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return Command.ERROR;
+            }
+        } else {
+            System.out.println("Invalid Command!");
+            return help.executeOnMaster();
+        }
+    }
+
+    public String executeOnSlave(String... arguments) {
+        if (command.hasValidArguments(arguments)) {
+            try {
+                return command.executeOnSlave(arguments);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return Command.ERROR;
     }
 
     public String getName() {
