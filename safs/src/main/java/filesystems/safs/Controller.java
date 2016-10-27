@@ -1,5 +1,6 @@
 package filesystems.safs;
 
+import filesystems.safs.commands.CommandType;
 import filesystems.safs.storageRepresentations.Directory;
 import filesystems.safs.storageRepresentations.File;
 import filesystems.safs.storageRepresentations.Node;
@@ -23,8 +24,9 @@ public class Controller {
                 nodes = new ArrayList<>();
                 for (String nodeLocation : nodeLocations) {
                     nodes.add(new Node(nodeLocation));
-                    //TODO: we need to poll all of the nodes to see what files already exist on them we should be able to use ls with the homeDir for this.
                 }
+                System.out.println("The Current state of the file system:");
+                CommandType.ls.executeOnMaster(); // By performing an ls here we allow the user to quickly see what their file system looks like on startup and also populate all of the nodes with their initial file info
             } else {
                 throw new IllegalArgumentException("No Node locations were provided when initializing the Controller.");
             }

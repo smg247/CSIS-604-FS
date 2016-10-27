@@ -22,10 +22,6 @@ public class Directory {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Directory addDirectory(String directoryName) {
         Directory directory = null;
         for (Directory dir : directories) {
@@ -46,7 +42,7 @@ public class Directory {
         return directories;
     }
 
-    public void addFile(String fileName, int sizeInBytes) {
+    public void addFile(String fileName, long sizeInBytes) {
         if (fileName.contains("/")) {
             String directoryName = fileName.substring(0, fileName.indexOf("/"));
             String restOfFilePath = fileName.substring(fileName.indexOf("/") + 1);
@@ -110,7 +106,7 @@ public class Directory {
         nestingLevel++;
 
         for (File file : files) {
-            System.out.println(determineSpacesFromNestingLevel(nestingLevel) + file.getFileName());
+            file.prettyPrint(determineSpacesFromNestingLevel(nestingLevel));
         }
 
         for (Directory directory : directories) {

@@ -2,10 +2,10 @@ package filesystems.safs.storageRepresentations;
 
 public class File {
     private String fileName;
-    private int sizeInBytes;
+    private long sizeInBytes;
 
 
-    File(String fileName, int sizeInBytes) {
+    File(String fileName, long sizeInBytes) {
         this.fileName = fileName;
         this.sizeInBytes = sizeInBytes;
     }
@@ -18,8 +18,16 @@ public class File {
         return fileName;
     }
 
-    public int getSizeInBytes() {
+    public long getSizeInBytes() {
         return sizeInBytes;
+    }
+
+    public void prettyPrint(String spacesToPrepend) {
+        StringBuilder spaceBuilder = new StringBuilder();
+        for (int i = fileName.length() + spacesToPrepend.length(); i < 50; i++) {
+            spaceBuilder.append(" ");
+        }
+        System.out.println(spacesToPrepend + fileName + spaceBuilder.toString() + sizeInBytes + " bytes");
     }
 
     @Override

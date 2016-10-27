@@ -34,7 +34,7 @@ public class Node implements Comparable<Node> {
         addFile(fullyQualifiedPath, 0);
     }
 
-    public void addFile(String fullyQualifiedPath, int sizeInBytes) {
+    public void addFile(String fullyQualifiedPath, long sizeInBytes) {
         homeDirectory.addFile(fullyQualifiedPath, sizeInBytes);
     }
 

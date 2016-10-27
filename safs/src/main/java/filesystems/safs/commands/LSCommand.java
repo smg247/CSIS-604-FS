@@ -1,12 +1,11 @@
 package filesystems.safs.commands;
 
+import com.sun.tools.javac.util.Pair;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static filesystems.safs.commands.CommandResult.error;
 import static filesystems.safs.commands.CommandResult.success;
@@ -24,8 +23,9 @@ class LSCommand extends Command {
                 String message = CommandType.ls.getName() + " " + node.getFullyQualifiedHomeDirectoryName() + directory;
                 List<String> result = sendMessageToSlaveNode(node, Arrays.asList(message));
                 if (result != null) {
-                    for (String fileName : result) {
-                        node.addFile(fileName); // Attempt to add the file to the node just in case we didn't already know about it
+                    for (String line : result) {
+                        Pair<String, Long> fileNameAndSize = deserializeFileNameAndSize(line);
+                        node.addFile(fileNameAndSize.fst, fileNameAndSize.snd); // Attempt to add the file to the node just in case we didn't already know about it
                     }
                 } else {
                     return error;
@@ -43,10 +43,10 @@ class LSCommand extends Command {
     @Override
     CommandResult executeOnSlave(String... arguments) throws IOException {
         File directory = new File(arguments[0]);
-        List<String> fileNames = new ArrayList<>();
+        Map<String, Long> fileNames = new HashMap<>();
         if (directory.isDirectory()) {
             determineFilesInDirectory(directory, fileNames);
-            List<String> relativeFileNames = makeRelativeFileNames(directory.getName(), fileNames);
+            List<String> relativeFileNames = convertAllFileNamesToRelativeNamesAndPrepareForMessage(directory.getName(), fileNames);
             CommandResult commandResult = success;
             commandResult.setMultiLinedMessage(relativeFileNames);
             return commandResult;
@@ -57,24 +57,34 @@ class LSCommand extends Command {
         }
     }
 
-    private void determineFilesInDirectory(File file, List<String> fileNames) {
+    private void determineFilesInDirectory(File file, Map<String, Long> fileNameToSizeInBytes) {
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
-                determineFilesInDirectory(f, fileNames);
+                determineFilesInDirectory(f, fileNameToSizeInBytes);
             } else {
-                fileNames.add(f.getAbsolutePath());
+                fileNameToSizeInBytes.put(f.getAbsolutePath(), f.length());
             }
         }
     }
 
-    private List<String> makeRelativeFileNames(String relativeDirectoryName, List<String> fileNames) {
-        List<String> relativeFileNames = new ArrayList<>();
-        for (String fileName : fileNames) {
+    private List<String> convertAllFileNamesToRelativeNamesAndPrepareForMessage(String relativeDirectoryName, Map<String, Long> fileNameToSizeInBytes) {
+       List<String> linesInMessage = new ArrayList<>();
+        for (String fileName : fileNameToSizeInBytes.keySet()) {
             int relativeDirectoryNameIndex = fileName.indexOf(relativeDirectoryName);
-            relativeFileNames.add(fileName.substring(relativeDirectoryNameIndex + relativeDirectoryName.length() + 1));
+            String relativeFileName = fileName.substring(relativeDirectoryNameIndex + relativeDirectoryName.length() + 1);
+            linesInMessage.add(serializeFileNameAndSize(relativeFileName, fileNameToSizeInBytes.get(fileName)));
         }
 
-        return relativeFileNames;
+        return linesInMessage;
+    }
+
+    private String serializeFileNameAndSize(String fileName, long sizeInBytes) {
+        return fileName + " " + sizeInBytes;
+    }
+
+    private Pair<String, Long> deserializeFileNameAndSize(String fileNameAndSize) {
+        String[] split = fileNameAndSize.split("\\s+");
+        return new Pair<>(split[0], Long.parseLong(split[1]));
     }
 
     @Override
