@@ -18,6 +18,7 @@ public class Controller {
                 nodes = new ArrayList<>();
                 for (String nodeLocation : nodeLocations) {
                     nodes.add(new Node(nodeLocation));
+                    //TODO: we need to poll all of the nodes to see what files already exist on them we should be able to use ls with the homeDir for this.
                 }
 
                 this.testEnvironment = testEnvironment;
@@ -32,6 +33,16 @@ public class Controller {
     public Node determineNodeToReceiveNewFile() {
         Collections.sort(nodes);
         return nodes.get(0);
+    }
+
+    public boolean doesFileExist(String fileName) {
+        for (Node node : nodes) {
+            if (node.hasFile(fileName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isTestEnvironment() {

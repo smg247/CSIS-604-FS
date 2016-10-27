@@ -7,32 +7,34 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
+import static filesystems.safs.commands.CommandResult.error;
 import static filesystems.safs.commands.CommandResult.success;
 
 class TouchCommand extends Command {
     @Override
     public CommandResult executeOnMaster(String... arguments) throws IOException {
-        Node node = controller.determineNodeToReceiveNewFile();
-        String fileName = node.getHomeDirectoryName() + arguments[0];
-        System.out.println("Sending " + fileName + " to " + node.toString() + ":" + node.getPort());
+        String fileName = arguments[0];
+        if (!controller.doesFileExist(fileName)) {
+            Node node = controller.determineNodeToReceiveNewFile();
+            String fileNameForSlave = node.determineFileNameForSlave(fileName);
+            System.out.println("Sending " + fileName + " to " + node.toString() + ":" + node.getPort());
 
-        Socket socket = new Socket(node.getAddress(), node.getPort());
-        BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-        printWriter.println(CommandType.touch.getName() + " " + fileName);
-        printWriter.println(".");
-
-        String line = inputReader.readLine();
-
-        CommandResult commandResult = CommandResult.valueOf(line);
-        if (success == commandResult) { // Notify the Controller that this node contains the new file
-            node.addFile(fileName);
+            List<String> response = sendMessageToSlaveNode(node, Arrays.asList(CommandType.touch.getName() + " " + fileNameForSlave));
+            CommandResult commandResult = CommandResult.valueOf(response.get(0));
+            if (success == commandResult) { // Notify the Controller that this node contains the new file
+                node.addFile(fileName);
+            } else {
+                System.out.println("Something went wrong while attempting to create the file remotely.");
+            }
+            return commandResult;
         } else {
-            System.out.println("Something went wrong while attempting to create the file remotely.");
+            CommandResult commandResult = error;
+            commandResult.setMessage("File already exists!");
+            return commandResult;
         }
-        socket.close();
-        return commandResult;
     }
 
     @Override

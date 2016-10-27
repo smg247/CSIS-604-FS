@@ -58,11 +58,15 @@ public class Node implements Comparable<Node> {
         return false;
     }
 
+    public String determineFileNameForSlave(String rawFileName) {
+        return getHomeDirectoryName() + rawFileName;
+    }
+
     public String getHomeDirectoryName() {
         if (Controller.CONTROLLER.isTestEnvironment()) {
             return "dir" + port + "/";
         } else {
-            return "";
+            return "dir/";
         }
     }
 

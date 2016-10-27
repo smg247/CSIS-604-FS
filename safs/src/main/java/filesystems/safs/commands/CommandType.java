@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 public enum CommandType {
     help(new HelpCommand()),
+    ls(new LSCommand()),
     touch(new TouchCommand()),
     mv(new MVCommand()),
     cp(new CPCommand());
@@ -41,7 +42,12 @@ public enum CommandType {
         }
 
         if (isMaster) {
-            return commandType.executeOnMaster(arguments);
+            CommandResult commandResult = commandType.executeOnMaster(arguments);
+            String message = commandResult.getMessage();
+            if (message != null) {
+                System.out.println(message);
+            }
+            return commandResult;
         } else {
             return commandType.executeOnSlave(arguments);
         }
