@@ -11,6 +11,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static filesystems.safs.commands.CommandResult.success;
+
 abstract class Command {
     protected Controller controller = Controller.CONTROLLER;
 
@@ -31,15 +33,21 @@ abstract class Command {
 
         printWriter.println(".");
 
-        List<String> linesOfResponse = new ArrayList<>();
-        String line;
-        while((line = inputReader.readLine()) != null && !".".equals(line)) {
-            linesOfResponse.add(line);
+        CommandResult commandResult = CommandResult.valueOf(inputReader.readLine());
+        if (success == commandResult) {
+            List<String> linesOfResponse = new ArrayList<>();
+            String line;
+            while ((line = inputReader.readLine()) != null && !".".equals(line)) {
+                linesOfResponse.add(line);
+            }
+
+            socket.close();
+
+            return linesOfResponse;
+        } else {
+            System.out.println("ERROR"); //TODO: better error messaging
+            return null;
         }
-
-        socket.close();
-
-        return linesOfResponse;
     }
 
     abstract CommandResult executeOnMaster(String... arguments) throws IOException;

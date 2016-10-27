@@ -1,16 +1,27 @@
 package filesystems.safs.commands;
 
+import java.util.List;
+
 public enum CommandResult {
     success,
     error;
 
-    private String message;
+    private String simpleMessage;
+    private List<String> multiLinedMessage;
 
-    public String getMessage() {
-        return message;
+    public String getSimpleMessage() {
+        return simpleMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setSimpleMessage(String simpleMessage) {
+        this.simpleMessage = simpleMessage;
+    }
+
+    public List<String> getMultiLinedMessage() {
+        return multiLinedMessage;
+    }
+
+    public void setMultiLinedMessage(List<String> multiLinedMessage) {
+        this.multiLinedMessage = multiLinedMessage;
     }
 }

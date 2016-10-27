@@ -42,12 +42,7 @@ public enum CommandType {
         }
 
         if (isMaster) {
-            CommandResult commandResult = commandType.executeOnMaster(arguments);
-            String message = commandResult.getMessage();
-            if (message != null) {
-                System.out.println(message);
-            }
-            return commandResult;
+            return commandType.executeOnMaster(arguments);
         } else {
             return commandType.executeOnSlave(arguments);
         }

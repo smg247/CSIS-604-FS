@@ -1,5 +1,6 @@
 package filesystems.safs;
 
+import filesystems.safs.commands.CommandResult;
 import filesystems.safs.commands.CommandType;
 
 import java.util.Arrays;
@@ -14,7 +15,11 @@ public class MasterDriver {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             String rawCommand = scanner.nextLine();
-            CommandType.executeCommand(rawCommand, true);
+            CommandResult commandResult = CommandType.executeCommand(rawCommand, true);
+            String message = commandResult.getSimpleMessage();
+            if (message != null) {
+                System.out.println(message);
+            }
         }
     }
 

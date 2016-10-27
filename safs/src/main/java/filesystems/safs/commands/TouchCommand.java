@@ -3,7 +3,6 @@ package filesystems.safs.commands;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.*;
-import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,20 +18,19 @@ class TouchCommand extends Command {
         String fileName = arguments[0];
         if (!controller.doesFileExist(fileName)) {
             Node node = controller.determineNodeToReceiveNewFile();
-            String fileNameForSlave = node.determineFileNameForSlave(fileName);
+            String fileNameForSlave = node.getFullyQualifiedHomeDirectoryName() + fileName;
             System.out.println("Sending " + fileName + " to " + node.toString() + ":" + node.getPort());
 
             List<String> response = sendMessageToSlaveNode(node, Arrays.asList(CommandType.touch.getName() + " " + fileNameForSlave));
-            CommandResult commandResult = CommandResult.valueOf(response.get(0));
-            if (success == commandResult) { // Notify the Controller that this node contains the new file
+            if (response != null) { // If we get a non-null response back we know it was successful
                 node.addFile(fileName);
+                return success;
             } else {
-                System.out.println("Something went wrong while attempting to create the file remotely.");
+                return error;
             }
-            return commandResult;
         } else {
             CommandResult commandResult = error;
-            commandResult.setMessage("File already exists!");
+            commandResult.setSimpleMessage("File already exists!");
             return commandResult;
         }
     }

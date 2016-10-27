@@ -1,24 +1,44 @@
 package filesystems.safs.storageRepresentations;
 
-class File {
-    private String fullyQualifiedPath;
+public class File {
+    private String fileName;
     private int sizeInBytes;
 
 
-    File(String fullyQualifiedPath, int sizeInBytes) {
-        this.fullyQualifiedPath = fullyQualifiedPath;
+    File(String fileName, int sizeInBytes) {
+        this.fileName = fileName;
         this.sizeInBytes = sizeInBytes;
     }
 
-    public void setFullyQualifiedPath(String fullyQualifiedPath) {
-        this.fullyQualifiedPath = fullyQualifiedPath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public String getFullyQualifiedPath() {
-        return fullyQualifiedPath;
+    public String getFileName() {
+        return fileName;
     }
 
     public int getSizeInBytes() {
         return sizeInBytes;
+    }
+
+    @Override
+        public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        File file = (File) o;
+
+        return fileName.equals(file.fileName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return fileName.hashCode();
     }
 }

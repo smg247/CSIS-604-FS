@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class SlaveDriver {
     public static void main(String[] args) throws IOException {
@@ -24,11 +25,23 @@ public class SlaveDriver {
                     String rawCommand = inputReader.readLine();
                     String line;
                     while ((line = inputReader.readLine()) != null && !".".equals(line)) {
-
+                        //TODO
                     }
 
                     CommandResult commandResult = CommandType.executeCommand(rawCommand, false);
                     printWriter.println(commandResult);
+                    String simpleMessage = commandResult.getSimpleMessage();
+                    if (simpleMessage != null) {
+                        printWriter.println(simpleMessage);
+                    } else {
+                        List<String> multiLinedMessage = commandResult.getMultiLinedMessage();
+                        if (multiLinedMessage != null) {
+                            for (String lineInMessage : multiLinedMessage) {
+                                printWriter.println(lineInMessage);
+                            }
+                        }
+                    }
+                    printWriter.println(".");
                     System.out.println("Just recieved a commandResult of " + commandResult + " while attempting to " + rawCommand);
 
                 } finally {

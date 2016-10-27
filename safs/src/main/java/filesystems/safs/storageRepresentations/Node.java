@@ -3,14 +3,10 @@ package filesystems.safs.storageRepresentations;
 
 import filesystems.safs.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Node implements Comparable<Node> {
     private String address;
     private int port;
-    private List<File> storedFiles;
-    private int bytesStored;
+    private Directory homeDirectory;
 
 
     public Node(String addressAndPort) {
@@ -18,10 +14,12 @@ public class Node implements Comparable<Node> {
         if (arguments.length == 2) {
             address = arguments[0];
             port = Integer.parseInt(arguments[1]);
+            String directoryName = Controller.CONTROLLER.isTestEnvironment() ? ("dir" + port) : "dir";
+            homeDirectory = new Directory(directoryName);
         } else {
             throw new IllegalArgumentException("Improperly formatted addressAndPort.");
         }
-        storedFiles = new ArrayList<>();
+
     }
 
     public String getAddress() {
@@ -37,44 +35,26 @@ public class Node implements Comparable<Node> {
     }
 
     public void addFile(String fullyQualifiedPath, int sizeInBytes) {
-        storedFiles.add(new File(fullyQualifiedPath, sizeInBytes));
+        homeDirectory.addFile(fullyQualifiedPath, sizeInBytes);
     }
 
-    public int getBytesStored() {
-        return bytesStored;
+    public Directory getHomeDirectory() {
+        return homeDirectory;
     }
 
-    public void setBytesStored(int bytesStored) {
-        this.bytesStored = bytesStored;
+    public String getFullyQualifiedHomeDirectoryName() {
+        return homeDirectory.getName() + "/";
     }
 
     public boolean hasFile(String fileName) {
-        for (File storedFile : storedFiles) {
-            if (fileName.equals(storedFile.getFullyQualifiedPath())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public String determineFileNameForSlave(String rawFileName) {
-        return getHomeDirectoryName() + rawFileName;
-    }
-
-    public String getHomeDirectoryName() {
-        if (Controller.CONTROLLER.isTestEnvironment()) {
-            return "dir" + port + "/";
-        } else {
-            return "dir/";
-        }
+        return homeDirectory.containsFile(fileName);
     }
 
     @Override
     public int compareTo(Node o) {
-        int differenceInBytesStored = bytesStored - o.bytesStored;
+        int differenceInBytesStored = homeDirectory.getBytesStored() - o.homeDirectory.getBytesStored();
         if (differenceInBytesStored == 0) {
-            return storedFiles.size() - o.storedFiles.size();
+            return homeDirectory.getNumberOfIncludedFiles() - o.homeDirectory.getNumberOfIncludedFiles();
         } else {
             return differenceInBytesStored;
         }
