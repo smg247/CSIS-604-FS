@@ -3,20 +3,23 @@ package filesystems.safs.commands;
 
 import java.io.IOException;
 
+import static filesystems.safs.commands.CommandResult.error;
+import static filesystems.safs.commands.CommandResult.success;
+
 class HelpCommand extends Command {
     @Override
-    public String executeOnMaster(String... arguments) throws IOException {
+    public CommandResult executeOnMaster(String... arguments) throws IOException {
         for (CommandType commandType : CommandType.values()) {
             System.out.println(commandType.getName() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
         }
 
-        return SUCCESS;
+        return success;
     }
 
     @Override
-    public String executeOnSlave(String... arguments) throws IOException {
+    public CommandResult executeOnSlave(String... arguments) throws IOException {
         // Not valid for execution on slave
-        return ERROR;
+        return error;
     }
 
     @Override

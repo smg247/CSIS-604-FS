@@ -24,7 +24,7 @@ public enum CommandType {
         return null;
     }
 
-    public static String executeCommand(String rawCommand, boolean isMaster) {
+    public static CommandResult executeCommand(String rawCommand, boolean isMaster) {
         String[] commandWithArguments = rawCommand.split("\\s+");
         CommandType commandType = null;
         if (commandWithArguments.length > 0) {
@@ -54,13 +54,13 @@ public enum CommandType {
         this.command = command;
     }
 
-    public String executeOnMaster(String... arguments) {
+    public CommandResult executeOnMaster(String... arguments) {
         if (command.hasValidArguments(arguments)) {
             try {
                 return command.executeOnMaster(arguments);
             } catch (IOException e) {
                 e.printStackTrace();
-                return Command.ERROR;
+                return CommandResult.error;
             }
         } else {
             System.out.println("Invalid Command!");
@@ -68,7 +68,7 @@ public enum CommandType {
         }
     }
 
-    public String executeOnSlave(String... arguments) {
+    public CommandResult executeOnSlave(String... arguments) {
         if (command.hasValidArguments(arguments)) {
             try {
                 return command.executeOnSlave(arguments);
@@ -77,7 +77,7 @@ public enum CommandType {
             }
         }
 
-        return Command.ERROR;
+        return CommandResult.error;
     }
 
     public String getName() {

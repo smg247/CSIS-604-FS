@@ -8,11 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static filesystems.safs.commands.CommandResult.success;
+
 class TouchCommand extends Command {
     @Override
-    public String executeOnMaster(String... arguments) throws IOException {
+    public CommandResult executeOnMaster(String... arguments) throws IOException {
         Node node = controller.determineNodeToReceiveNewFile();
-        String fileName = arguments[0];
+        String fileName = node.getHomeDirectoryName() + arguments[0];
         System.out.println("Sending " + fileName + " to " + node.toString() + ":" + node.getPort());
 
         Socket socket = new Socket(node.getAddress(), node.getPort());
@@ -21,18 +23,20 @@ class TouchCommand extends Command {
         printWriter.println(CommandType.touch.getName() + " " + fileName);
         printWriter.println(".");
 
-        String line = inputReader.readLine(); //todo: maybe its not getting this result in time?
-        if (SUCCESS.equals(line)) { // Notify the Controller that this node contains the new file
+        String line = inputReader.readLine();
+
+        CommandResult commandResult = CommandResult.valueOf(line);
+        if (success == commandResult) { // Notify the Controller that this node contains the new file
             node.addFile(fileName);
         } else {
             System.out.println("Something went wrong while attempting to create the file remotely.");
         }
-
-        return line;
+        socket.close();
+        return commandResult;
     }
 
     @Override
-    public String executeOnSlave(String... arguments) throws IOException {
+    public CommandResult executeOnSlave(String... arguments) throws IOException {
         String fileName = arguments[0];
         Path path = Paths.get(fileName);
         if (path.getParent() != null) {
@@ -40,7 +44,7 @@ class TouchCommand extends Command {
         }
         Files.createFile(path);
 
-        return SUCCESS;
+        return success;
     }
 
     @Override

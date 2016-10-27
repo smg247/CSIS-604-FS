@@ -1,5 +1,6 @@
 package filesystems.safs;
 
+import filesystems.safs.commands.CommandResult;
 import filesystems.safs.commands.CommandType;
 
 import java.io.BufferedReader;
@@ -18,15 +19,20 @@ public class SlaveDriver {
                 Socket socket = serverSocket.accept();
                 try {
                     BufferedReader inputReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                    String line = inputReader.readLine();
-                    String commandResult = CommandType.executeCommand(line, false);
-
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    printWriter.print(commandResult);
-                    System.out.println("Just recieved a commandResult of " + commandResult + " while attempting to " + line);
+
+                    String rawCommand = inputReader.readLine();
+                    String line;
+                    while ((line = inputReader.readLine()) != null && !".".equals(line)) {
+
+                    }
+
+                    CommandResult commandResult = CommandType.executeCommand(rawCommand, false);
+                    printWriter.println(commandResult);
+                    System.out.println("Just recieved a commandResult of " + commandResult + " while attempting to " + rawCommand);
 
                 } finally {
+                    System.out.println("Closing socket.");
                     socket.close();
                 }
             }

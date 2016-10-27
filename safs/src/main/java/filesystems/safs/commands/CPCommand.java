@@ -4,13 +4,13 @@ import java.io.IOException;
 
 class CPCommand extends Command {
     @Override
-    public String executeOnMaster(String... arguments) throws IOException {
+    public CommandResult executeOnMaster(String... arguments) throws IOException {
         //TODO
         return null;
     }
 
     @Override
-    public String executeOnSlave(String... arguments) throws IOException {
+    public CommandResult executeOnSlave(String... arguments) throws IOException {
         //TODO
         return null;
     }

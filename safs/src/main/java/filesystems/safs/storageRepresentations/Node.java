@@ -1,6 +1,8 @@
 package filesystems.safs.storageRepresentations;
 
 
+import filesystems.safs.Controller;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +58,22 @@ public class Node implements Comparable<Node> {
         return false;
     }
 
+    public String getHomeDirectoryName() {
+        if (Controller.CONTROLLER.isTestEnvironment()) {
+            return "dir" + port + "/";
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public int compareTo(Node o) {
-        return o.bytesStored - bytesStored;
+        int differenceInBytesStored = bytesStored - o.bytesStored;
+        if (differenceInBytesStored == 0) {
+            return storedFiles.size() - o.storedFiles.size();
+        } else {
+            return differenceInBytesStored;
+        }
     }
 
     @Override
