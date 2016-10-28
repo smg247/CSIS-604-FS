@@ -10,6 +10,7 @@ public enum CommandType {
     help(new HelpCommand()),
     ls(new LSCommand()),
     touch(new TouchCommand()),
+    mkdir(new MKDIRCommand()),
     mv(new MVCommand()),
     cp(new CPCommand()),
     rm(new RMCommand());
