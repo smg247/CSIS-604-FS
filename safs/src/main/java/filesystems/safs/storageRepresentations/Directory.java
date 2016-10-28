@@ -97,12 +97,35 @@ public class Directory {
         return size;
     }
 
+    public Directory getSubDirectory(String fullyQualifiedPath) {
+        String directoryName;
+        if (fullyQualifiedPath.contains("/")) {
+            directoryName = fullyQualifiedPath.substring(0, fullyQualifiedPath.indexOf("/"));
+        } else {
+            directoryName = fullyQualifiedPath;
+        }
+        for (Directory directory : directories) {
+            if (directoryName.equals(directory.getName())) {
+                if (directoryName.equals(fullyQualifiedPath)) {
+                    return directory;
+                } else {
+                    String restOfFilePath = fullyQualifiedPath.substring(fullyQualifiedPath.indexOf("/") + 1);
+                    return directory.getSubDirectory(restOfFilePath);
+                }
+            }
+        }
+
+        return null; // The provided fullyQualifiedPath was not found in this directories descendants
+    }
+
     public void prettyPrint() {
         prettyPrint(0);
     }
 
     private void prettyPrint(int nestingLevel) {
-        System.out.println(determineSpacesFromNestingLevel(nestingLevel) + name + "/");
+        if (nestingLevel > 0) { // We don't really want to print this directory if its the root of our printing
+            System.out.println(determineSpacesFromNestingLevel(nestingLevel) + name + "/");
+        }
         nestingLevel++;
 
         for (File file : files) {

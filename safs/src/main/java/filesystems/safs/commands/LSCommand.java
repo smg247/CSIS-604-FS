@@ -35,7 +35,12 @@ class LSCommand extends Command {
             controller.setContainsUpToDateFileInformation(true); // We will no longer need to reach out to the slaves in order to perform an ls or know what files they contain
         }
 
-        controller.prettyPrint();
+        String directory = "";
+        if (arguments != null && arguments.length == 1) {
+            directory = arguments[0];
+        }
+
+        controller.prettyPrint(directory);
 
         return success;
     }

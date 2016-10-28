@@ -54,8 +54,16 @@ public class Controller {
         return nodes;
     }
 
-    public void prettyPrint() {
-        getUnifiedHomeDirectory().prettyPrint();
+    public void prettyPrint(String fullyQualifiedDirectoryName) {
+        if (fullyQualifiedDirectoryName.endsWith("/")) {
+            fullyQualifiedDirectoryName = fullyQualifiedDirectoryName.substring(0, fullyQualifiedDirectoryName.length() - 1);
+        }
+        Directory unifiedHomeDirectory = getUnifiedHomeDirectory();
+        if (fullyQualifiedDirectoryName.length() > 1) {
+            unifiedHomeDirectory.getSubDirectory(fullyQualifiedDirectoryName).prettyPrint();
+        } else {
+            unifiedHomeDirectory.prettyPrint();
+        }
     }
 
     private Directory getUnifiedHomeDirectory() {
