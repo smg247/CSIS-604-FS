@@ -11,7 +11,8 @@ public enum CommandType {
     ls(new LSCommand()),
     touch(new TouchCommand()),
     mv(new MVCommand()),
-    cp(new CPCommand());
+    cp(new CPCommand()),
+    rm(new RMCommand());
 
 
     @Nullable
