@@ -59,11 +59,7 @@ public class Controller {
             fullyQualifiedDirectoryName = fullyQualifiedDirectoryName.substring(0, fullyQualifiedDirectoryName.length() - 1);
         }
         Directory unifiedHomeDirectory = getUnifiedHomeDirectory();
-        if (fullyQualifiedDirectoryName.length() > 1) {
-            unifiedHomeDirectory.getSubDirectory(fullyQualifiedDirectoryName).prettyPrint();
-        } else {
-            unifiedHomeDirectory.prettyPrint();
-        }
+        unifiedHomeDirectory.getDirectory(fullyQualifiedDirectoryName).prettyPrint();
     }
 
     private Directory getUnifiedHomeDirectory() {

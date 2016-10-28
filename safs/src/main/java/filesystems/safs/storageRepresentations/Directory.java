@@ -1,9 +1,7 @@
 package filesystems.safs.storageRepresentations;
 
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Directory {
@@ -72,19 +70,23 @@ public class Directory {
     }
 
     public boolean containsFile(String fileName) {
-        for (File file : files) {
-            if (fileName.equals(file.getFileName())) {
-                return true;
+        return getFile(fileName) != null;
+    }
+
+    public File getFile(String fileName) {
+        if (fileName.contains("/")) {
+            String directoryName = fileName.substring(0, fileName.indexOf("/"));
+            String restOfFilePath = fileName.substring(fileName.indexOf("/") + 1);
+            return getDirectory(directoryName).getFile(restOfFilePath);
+        } else {
+            for (File file : files) {
+                if (fileName.equals(file.getFileName())) {
+                    return file;
+                }
             }
         }
 
-        for (Directory directory : directories) {
-            if (directory.containsFile(fileName)) {
-                return true;
-            }
-        }
-
-        return false;
+        return null;
     }
 
     public int getNumberOfIncludedFiles() {
@@ -97,7 +99,14 @@ public class Directory {
         return size;
     }
 
-    public Directory getSubDirectory(String fullyQualifiedPath) {
+    public boolean containsDirectory(String fullyQualifiedPath) {
+        return getDirectory(fullyQualifiedPath) != null;
+    }
+
+    public Directory getDirectory(String fullyQualifiedPath) {
+        if ("".equals(fullyQualifiedPath)) {
+            return this;
+        }
         String directoryName;
         if (fullyQualifiedPath.contains("/")) {
             directoryName = fullyQualifiedPath.substring(0, fullyQualifiedPath.indexOf("/"));
@@ -110,7 +119,7 @@ public class Directory {
                     return directory;
                 } else {
                     String restOfFilePath = fullyQualifiedPath.substring(fullyQualifiedPath.indexOf("/") + 1);
-                    return directory.getSubDirectory(restOfFilePath);
+                    return directory.getDirectory(restOfFilePath);
                 }
             }
         }
