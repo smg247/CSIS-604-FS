@@ -13,9 +13,10 @@ import static filesystems.safs.commands.CommandResult.error;
 import static filesystems.safs.commands.CommandResult.success;
 
 class TouchCommand extends Command {
+    private String fileName;
+
     @Override
     public CommandResult executeOnMaster(String... arguments) throws IOException {
-        String fileName = arguments[0];
         if (!controller.doesFileExist(fileName)) {
             Node node = controller.determineNodeToReceiveNewFile();
             String fileNameForSlave = node.getFullyQualifiedHomeDirectoryName() + fileName;
@@ -37,7 +38,6 @@ class TouchCommand extends Command {
 
     @Override
     public CommandResult executeOnSlave(String... arguments) throws IOException {
-        String fileName = arguments[0];
         Path path = Paths.get(fileName);
         if (path.getParent() != null) {
             Files.createDirectories(path.getParent());
@@ -48,7 +48,12 @@ class TouchCommand extends Command {
     }
 
     @Override
-    public boolean hasValidArguments(String... arguments) {
-        return arguments != null && arguments.length == 1;
+    public boolean validateAndInitializeArguments(String... arguments) {
+        if (arguments != null && arguments.length == 1) {
+            fileName = arguments[0];
+            return true;
+        } else {
+            return false;
+        }
     }
 }

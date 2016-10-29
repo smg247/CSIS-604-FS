@@ -25,7 +25,7 @@ class MVCommand extends Command {
     }
 
     @Override
-    public boolean hasValidArguments(String... arguments) {
+    public boolean validateAndInitializeArguments(String... arguments) {
         return arguments != null && arguments.length == 2;
     }
 }

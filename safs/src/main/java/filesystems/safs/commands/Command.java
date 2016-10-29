@@ -52,6 +52,6 @@ abstract class Command {
 
     abstract CommandResult executeOnMaster(String... arguments) throws IOException;
     abstract CommandResult executeOnSlave(String... arguments) throws IOException;
-    abstract boolean hasValidArguments(String... arguments);
+    abstract boolean validateAndInitializeArguments(String... arguments);
 
 }

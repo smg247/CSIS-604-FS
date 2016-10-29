@@ -11,16 +11,13 @@ import static filesystems.safs.commands.CommandResult.error;
 import static filesystems.safs.commands.CommandResult.success;
 
 class LSCommand extends Command {
+    private String directoryName;
+
     @Override
     CommandResult executeOnMaster(String... arguments) throws IOException {
         if (!controller.isContainsUpToDateFileInformation()) {
             for (Node node : controller.getNodes()) {
-                String directory = "";
-                if (arguments != null && arguments.length == 1) {
-                    directory = arguments[0];
-                }
-
-                String message = CommandType.ls.name() + " " + node.getFullyQualifiedHomeDirectoryName() + directory;
+                String message = CommandType.ls.name() + " " + node.getFullyQualifiedHomeDirectoryName() + (directoryName != null ? directoryName : "");
                 List<String> result = sendMessageToSlaveNode(node, Arrays.asList(message));
                 if (result != null) {
                     for (String line : result) {
@@ -47,7 +44,7 @@ class LSCommand extends Command {
 
     @Override
     CommandResult executeOnSlave(String... arguments) throws IOException {
-        File directory = new File(arguments[0]);
+        File directory = new File(directoryName);
         Map<String, Long> fileNames = new HashMap<>();
         if (directory.isDirectory()) {
             determineFilesInDirectory(directory, fileNames);
@@ -93,7 +90,14 @@ class LSCommand extends Command {
     }
 
     @Override
-    boolean hasValidArguments(String... arguments) {
-        return arguments == null || arguments.length <= 1;
+    boolean validateAndInitializeArguments(String... arguments) {
+        if (arguments == null || arguments.length == 0) {
+            return true;
+        } else if (arguments.length == 1) {
+            directoryName = arguments[0];
+            return true;
+        } else {
+            return false;
+        }
     }
 }

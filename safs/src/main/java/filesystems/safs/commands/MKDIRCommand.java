@@ -16,7 +16,7 @@ public class MKDIRCommand extends Command {
     }
 
     @Override
-    boolean hasValidArguments(String... arguments) {
+    boolean validateAndInitializeArguments(String... arguments) {
         return arguments != null && arguments.length == 1;
     }
 }

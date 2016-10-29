@@ -64,7 +64,7 @@ public enum CommandType {
     public CommandResult executeOnMaster(String... arguments) {
         try {
             Command command = commandClass.newInstance();
-            if (command.hasValidArguments(arguments)) {
+            if (command.validateAndInitializeArguments(arguments)) {
                 try {
                     return command.executeOnMaster(arguments);
                 } catch (IOException e) {
@@ -85,7 +85,7 @@ public enum CommandType {
     public CommandResult executeOnSlave(String... arguments) {
         try {
             Command command = commandClass.newInstance();
-            if (command.hasValidArguments(arguments)) {
+            if (command.validateAndInitializeArguments(arguments)) {
                 try {
                     return command.executeOnSlave(arguments);
                 } catch (IOException e) {
