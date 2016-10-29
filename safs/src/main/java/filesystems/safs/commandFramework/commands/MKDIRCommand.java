@@ -1,9 +1,12 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
+
+import filesystems.safs.commandFramework.CommandResult;
+import filesystems.safs.commandFramework.commands.Command;
 
 import java.io.IOException;
 import java.util.List;
 
-public class MKDIRCommand extends Command {
+class MKDIRCommand extends Command {
     @Override
     CommandResult executeOnMaster() throws IOException {
         //TODO

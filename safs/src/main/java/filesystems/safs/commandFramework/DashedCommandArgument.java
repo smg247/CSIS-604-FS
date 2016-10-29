@@ -1,4 +1,4 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework;
 
 public enum DashedCommandArgument {
     l, // Local

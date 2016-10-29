@@ -1,7 +1,7 @@
-package filesystems.safs;
+package filesystems.safs.master;
 
-import filesystems.safs.commands.CommandResult;
-import filesystems.safs.commands.CommandType;
+import filesystems.safs.commandFramework.CommandResult;
+import filesystems.safs.commandFramework.commands.CommandType;
 
 import java.util.List;
 import java.util.Scanner;

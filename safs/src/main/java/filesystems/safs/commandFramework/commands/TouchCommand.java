@@ -1,5 +1,6 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
 
+import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.*;

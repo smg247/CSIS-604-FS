@@ -1,4 +1,6 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
+
+import filesystems.safs.commandFramework.CommandResult;
 
 import java.io.IOException;
 import java.util.List;

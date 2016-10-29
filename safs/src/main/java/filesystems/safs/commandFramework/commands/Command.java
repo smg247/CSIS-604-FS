@@ -1,6 +1,8 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
 
-import filesystems.safs.Controller;
+import filesystems.safs.master.Controller;
+import filesystems.safs.commandFramework.CommandResult;
+import filesystems.safs.commandFramework.DashedCommandArgument;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.BufferedReader;

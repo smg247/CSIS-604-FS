@@ -1,6 +1,8 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
 
 import com.sun.tools.javac.util.Pair;
+import filesystems.safs.commandFramework.CommandResult;
+import filesystems.safs.commandFramework.DashedCommandArgument;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.File;

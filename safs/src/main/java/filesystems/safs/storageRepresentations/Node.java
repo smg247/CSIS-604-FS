@@ -1,7 +1,7 @@
 package filesystems.safs.storageRepresentations;
 
 
-import filesystems.safs.Controller;
+import filesystems.safs.master.Controller;
 
 public class Node implements Comparable<Node> {
     private String address;

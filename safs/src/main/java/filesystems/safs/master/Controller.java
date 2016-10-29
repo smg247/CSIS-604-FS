@@ -1,7 +1,7 @@
-package filesystems.safs;
+package filesystems.safs.master;
 
-import filesystems.safs.commands.CommandType;
-import filesystems.safs.commands.DashedCommandArgument;
+import filesystems.safs.commandFramework.commands.CommandType;
+import filesystems.safs.commandFramework.DashedCommandArgument;
 import filesystems.safs.storageRepresentations.Directory;
 import filesystems.safs.storageRepresentations.File;
 import filesystems.safs.storageRepresentations.Node;

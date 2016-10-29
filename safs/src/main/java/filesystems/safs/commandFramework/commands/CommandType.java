@@ -1,7 +1,8 @@
-package filesystems.safs.commands;
+package filesystems.safs.commandFramework.commands;
 
 
 import com.sun.istack.internal.Nullable;
+import filesystems.safs.commandFramework.CommandResult;
 
 import java.io.IOException;
 import java.util.Arrays;
