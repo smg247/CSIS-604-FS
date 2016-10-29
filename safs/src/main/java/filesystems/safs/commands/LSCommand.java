@@ -20,7 +20,7 @@ class LSCommand extends Command {
                     directory = arguments[0];
                 }
 
-                String message = CommandType.ls.getName() + " " + node.getFullyQualifiedHomeDirectoryName() + directory;
+                String message = CommandType.ls.name() + " " + node.getFullyQualifiedHomeDirectoryName() + directory;
                 List<String> result = sendMessageToSlaveNode(node, Arrays.asList(message));
                 if (result != null) {
                     for (String line : result) {
@@ -90,21 +90,6 @@ class LSCommand extends Command {
     private Pair<String, Long> deserializeFileNameAndSize(String fileNameAndSize) {
         String[] split = fileNameAndSize.split("\\s+");
         return new Pair<>(split[0], Long.parseLong(split[1]));
-    }
-
-    @Override
-    String getName() {
-        return "ls";
-    }
-
-    @Override
-    String getDescription() {
-        return "Lists the contents of the current directory";
-    }
-
-    @Override
-    String getUsageDirections() {
-        return "Used by simply typing ls";
     }
 
     @Override

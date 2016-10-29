@@ -24,21 +24,6 @@ class RMCommand extends Command {
     }
 
     @Override
-    String getName() {
-        return "rm";
-    }
-
-    @Override
-    String getDescription() {
-        return "Removes the file or directory supplied";
-    }
-
-    @Override
-    String getUsageDirections() {
-        return "Supply the file name or directory name to remove. ex: rm sample.txt";
-    }
-
-    @Override
     boolean hasValidArguments(String... arguments) {
         return arguments != null && arguments.length == 1;
     }

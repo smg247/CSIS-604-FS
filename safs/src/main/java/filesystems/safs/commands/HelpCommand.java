@@ -10,7 +10,7 @@ class HelpCommand extends Command {
     @Override
     public CommandResult executeOnMaster(String... arguments) throws IOException {
         for (CommandType commandType : CommandType.values()) {
-            System.out.println(commandType.getName() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
+            System.out.println(commandType.name() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
         }
 
         return success;
@@ -20,21 +20,6 @@ class HelpCommand extends Command {
     public CommandResult executeOnSlave(String... arguments) throws IOException {
         // Not valid for execution on slave
         return error;
-    }
-
-    @Override
-    public String getName() {
-        return "help";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Usage information";
-    }
-
-    @Override
-    public String getUsageDirections() {
-        return "Simply use the command to receive all possible commands and their usages";
     }
 
     @Override

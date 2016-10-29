@@ -1,9 +1,6 @@
 package filesystems.safs.commands;
 
-import filesystems.safs.storageRepresentations.Node;
-
 import java.io.IOException;
-import java.util.List;
 
 public class MKDIRCommand extends Command {
     @Override
@@ -16,21 +13,6 @@ public class MKDIRCommand extends Command {
     CommandResult executeOnSlave(String... arguments) throws IOException {
         //TODO
         return null;
-    }
-
-    @Override
-    String getName() {
-        return "mkdir";
-    }
-
-    @Override
-    String getDescription() {
-        return "Creates a new directory with the given name";
-    }
-
-    @Override
-    String getUsageDirections() {
-        return "Simply supply the directory name to be created. ex: mkdir directory";
     }
 
     @Override

@@ -21,7 +21,7 @@ class TouchCommand extends Command {
             String fileNameForSlave = node.getFullyQualifiedHomeDirectoryName() + fileName;
             System.out.println("Sending " + fileName + " to " + node.toString() + ":" + node.getPort());
 
-            List<String> response = sendMessageToSlaveNode(node, Arrays.asList(CommandType.touch.getName() + " " + fileNameForSlave));
+            List<String> response = sendMessageToSlaveNode(node, Arrays.asList(CommandType.touch.name() + " " + fileNameForSlave));
             if (response != null) { // If we get a non-null response back we know it was successful
                 node.addFile(fileName);
                 return success;
@@ -45,21 +45,6 @@ class TouchCommand extends Command {
         Files.createFile(path);
 
         return success;
-    }
-
-    @Override
-    public String getName() {
-        return "touch";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Creates a new file";
-    }
-
-    @Override
-    public String getUsageDirections() {
-        return "Supply the name of the file to be created. ex: touch test.txt";
     }
 
     @Override

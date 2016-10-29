@@ -7,19 +7,19 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public enum CommandType {
-    help(new HelpCommand()),
-    ls(new LSCommand()),
-    touch(new TouchCommand()),
-    mkdir(new MKDIRCommand()),
-    mv(new MVCommand()),
-    cp(new CPCommand()),
-    rm(new RMCommand());
+    help(HelpCommand.class, "Usage information", "Simply use the command to receive all possible commands and their usages"),
+    ls(LSCommand.class, "Lists the contents of the current directory", "Used by simply typing ls"),
+    touch(TouchCommand.class, "Creates a new file", "Supply the name of the file to be created. ex: touch test.txt"),
+    mkdir(MKDIRCommand.class, "Creates a new directory", "Simply supply the directory name to be created. ex: mkdir directory"),
+    mv(MVCommand.class, "Moves a file to a new location", "Supply the file name of the file to be moved, and the location of which to move it. ex: mv test.txt renamed.txt"),
+    cp(CPCommand.class, "Copies a file to a new location", "Supply the file name of the file to be copied, and the location of which to copy it. ex: cp test.txt testCopy.txt"),
+    rm(RMCommand.class, "Removes the file or directory supplied", "Supply the file name or directory name to remove. ex: rm sample.txt");
 
 
     @Nullable
     private static CommandType getCommandTypeByName(String name) {
         for (CommandType commandType : values()) {
-            if (name.equals(commandType.getName())) {
+            if (name.equals(commandType.name())) {
                 return commandType;
             }
         }
@@ -51,47 +51,61 @@ public enum CommandType {
     }
 
 
-    private Command command;
+    private Class <? extends Command> commandClass;
+    private String description;
+    private String usageDirections;
 
-    CommandType(Command command) {
-        this.command = command;
+    CommandType(Class<? extends Command> commandClass, String description, String usageDirections) {
+        this.commandClass = commandClass;
+        this.description = description;
+        this.usageDirections = usageDirections;
     }
 
     public CommandResult executeOnMaster(String... arguments) {
-        if (command.hasValidArguments(arguments)) {
-            try {
-                return command.executeOnMaster(arguments);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return CommandResult.error;
+        try {
+            Command command = commandClass.newInstance();
+            if (command.hasValidArguments(arguments)) {
+                try {
+                    return command.executeOnMaster(arguments);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return CommandResult.error;
+                }
+            } else {
+                System.out.println("Invalid Arguments for command!");
+                return help.executeOnMaster();
             }
-        } else {
-            System.out.println("Invalid Command!");
-            return help.executeOnMaster();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return CommandResult.error;
         }
     }
 
     public CommandResult executeOnSlave(String... arguments) {
-        if (command.hasValidArguments(arguments)) {
-            try {
-                return command.executeOnSlave(arguments);
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            Command command = commandClass.newInstance();
+            if (command.hasValidArguments(arguments)) {
+                try {
+                    return command.executeOnSlave(arguments);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
+            return CommandResult.error;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+            return CommandResult.error;
         }
-
-        return CommandResult.error;
-    }
-
-    public String getName() {
-        return command.getName();
     }
 
     public String getDescription() {
-        return command.getDescription();
+        return description;
     }
 
     public String getUsageDirections() {
-        return command.getUsageDirections();
+        return usageDirections;
     }
 }
