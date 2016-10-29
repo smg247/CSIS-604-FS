@@ -67,9 +67,9 @@ abstract class Command {
         if (validateSpecificArguments(regularArguments)) {
             initializeSpecificArguments(regularArguments);
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     abstract CommandResult executeOnMaster() throws IOException;

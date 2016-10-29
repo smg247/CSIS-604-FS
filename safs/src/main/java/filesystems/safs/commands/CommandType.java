@@ -72,8 +72,9 @@ public enum CommandType {
                     return CommandResult.error;
                 }
             } else {
-                System.out.println("Invalid Arguments for command!");
-                return help.executeOnMaster();
+                CommandResult commandResult = CommandResult.error;
+                commandResult.setMessages(Arrays.asList("Invalid Arguments for command!", usageDirections));
+                return commandResult;
             }
         } catch (Exception e) {
             e.printStackTrace();

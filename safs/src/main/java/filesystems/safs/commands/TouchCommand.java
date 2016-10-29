@@ -31,7 +31,7 @@ class TouchCommand extends Command {
             }
         } else {
             CommandResult commandResult = error;
-            commandResult.setSimpleMessage("File already exists!");
+            commandResult.addSingleMessage("File already exists!");
             return commandResult;
         }
     }

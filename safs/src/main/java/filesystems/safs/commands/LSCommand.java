@@ -40,7 +40,7 @@ class LSCommand extends Command {
             commandResult = success;
         } else {
             commandResult = error;
-            commandResult.setSimpleMessage("Directory does not exist!");
+            commandResult.addSingleMessage("Directory does not exist!");
         }
 
         return commandResult;
@@ -54,11 +54,11 @@ class LSCommand extends Command {
             determineFilesInDirectory(directory, fileNames);
             List<String> relativeFileNames = convertAllFileNamesToRelativeNamesAndPrepareForMessage(directory.getName(), fileNames);
             CommandResult commandResult = success;
-            commandResult.setMultiLinedMessage(relativeFileNames);
+            commandResult.setMessages(relativeFileNames);
             return commandResult;
         } else {
             CommandResult commandResult = error;
-            commandResult.setSimpleMessage("Directory was not provided.");
+            commandResult.addSingleMessage("Directory was not provided.");
             return commandResult;
         }
     }

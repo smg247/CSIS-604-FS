@@ -4,6 +4,7 @@ import filesystems.safs.commands.CommandResult;
 import filesystems.safs.commands.CommandType;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class MasterDriver {
@@ -16,8 +17,8 @@ public class MasterDriver {
         while (true) {
             String rawCommand = scanner.nextLine();
             CommandResult commandResult = CommandType.executeCommand(rawCommand, true);
-            String message = commandResult.getSimpleMessage();
-            if (message != null) {
+            List<String> messages = commandResult.getMessages();
+            for (String message : messages) {
                 System.out.println(message);
             }
         }

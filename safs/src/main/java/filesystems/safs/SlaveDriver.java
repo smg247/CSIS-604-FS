@@ -30,16 +30,8 @@ public class SlaveDriver {
 
                     CommandResult commandResult = CommandType.executeCommand(rawCommand, false);
                     printWriter.println(commandResult);
-                    String simpleMessage = commandResult.getSimpleMessage();
-                    if (simpleMessage != null) {
-                        printWriter.println(simpleMessage);
-                    } else {
-                        List<String> multiLinedMessage = commandResult.getMultiLinedMessage();
-                        if (multiLinedMessage != null) {
-                            for (String lineInMessage : multiLinedMessage) {
-                                printWriter.println(lineInMessage);
-                            }
-                        }
+                    for (String lineInMessage : commandResult.getMessages()) {
+                        printWriter.println(lineInMessage);
                     }
                     printWriter.println(".");
                     System.out.println("Just recieved a commandResult of " + commandResult + " while attempting to " + rawCommand);
