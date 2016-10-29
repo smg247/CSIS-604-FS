@@ -16,7 +16,7 @@ class TouchCommand extends Command {
     private String fileName;
 
     @Override
-    public CommandResult executeOnMaster(String... arguments) throws IOException {
+    public CommandResult executeOnMaster() throws IOException {
         if (!controller.doesFileExist(fileName)) {
             Node node = controller.determineNodeToReceiveNewFile();
             String fileNameForSlave = node.getFullyQualifiedHomeDirectoryName() + fileName;
@@ -37,7 +37,7 @@ class TouchCommand extends Command {
     }
 
     @Override
-    public CommandResult executeOnSlave(String... arguments) throws IOException {
+    public CommandResult executeOnSlave() throws IOException {
         Path path = Paths.get(fileName);
         if (path.getParent() != null) {
             Files.createDirectories(path.getParent());
@@ -48,12 +48,12 @@ class TouchCommand extends Command {
     }
 
     @Override
-    public boolean validateAndInitializeArguments(String... arguments) {
-        if (arguments != null && arguments.length == 1) {
-            fileName = arguments[0];
-            return true;
-        } else {
-            return false;
-        }
+    public boolean validateSpecificArguments(List<String> arguments) {
+        return arguments.size() == 1;
+    }
+
+    @Override
+    protected void initializeSpecificArguments(List<String> arguments) {
+        fileName = arguments.get(0);
     }
 }

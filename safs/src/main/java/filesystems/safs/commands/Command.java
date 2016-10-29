@@ -15,6 +15,7 @@ import static filesystems.safs.commands.CommandResult.success;
 
 abstract class Command {
     protected Controller controller = Controller.CONTROLLER;
+    protected List<DashedCommandArgument> dashedCommandArguments = new ArrayList<>();
 
     /**
      * @param slaveNode         Node to send the message to
@@ -50,8 +51,30 @@ abstract class Command {
         }
     }
 
-    abstract CommandResult executeOnMaster(String... arguments) throws IOException;
-    abstract CommandResult executeOnSlave(String... arguments) throws IOException;
-    abstract boolean validateAndInitializeArguments(String... arguments);
+    boolean validateAndInitializeArguments(String... arguments) {
+        List<String> regularArguments = new ArrayList<>();
+        if (arguments != null) {
+            for (String argument : arguments) {
+                if (argument.contains("-")) {
+                    DashedCommandArgument dashedCommandArgument = DashedCommandArgument.valueOf(argument.substring(1));
+                    dashedCommandArguments.add(dashedCommandArgument);
+                } else {
+                    regularArguments.add(argument);
+                }
+            }
+        }
+
+        if (validateSpecificArguments(regularArguments)) {
+            initializeSpecificArguments(regularArguments);
+            return true;
+        }
+
+        return false;
+    }
+
+    abstract CommandResult executeOnMaster() throws IOException;
+    abstract CommandResult executeOnSlave() throws IOException;
+    protected abstract boolean validateSpecificArguments(List<String> arguments);
+    protected abstract void initializeSpecificArguments(List<String> arguments);
 
 }

@@ -66,7 +66,7 @@ public enum CommandType {
             Command command = commandClass.newInstance();
             if (command.validateAndInitializeArguments(arguments)) {
                 try {
-                    return command.executeOnMaster(arguments);
+                    return command.executeOnMaster();
                 } catch (IOException e) {
                     e.printStackTrace();
                     return CommandResult.error;
@@ -87,7 +87,7 @@ public enum CommandType {
             Command command = commandClass.newInstance();
             if (command.validateAndInitializeArguments(arguments)) {
                 try {
-                    return command.executeOnSlave(arguments);
+                    return command.executeOnSlave();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -14,7 +14,7 @@ class LSCommand extends Command {
     private String directoryName;
 
     @Override
-    CommandResult executeOnMaster(String... arguments) throws IOException {
+    CommandResult executeOnMaster() throws IOException {
         if (!controller.isContainsUpToDateFileInformation()) {
             for (Node node : controller.getNodes()) {
                 String message = CommandType.ls.name() + " " + node.getFullyQualifiedHomeDirectoryName() + (directoryName != null ? directoryName : "");
@@ -32,18 +32,22 @@ class LSCommand extends Command {
             controller.setContainsUpToDateFileInformation(true); // We will no longer need to reach out to the slaves in order to perform an ls or know what files they contain
         }
 
-        String directory = "";
-        if (arguments != null && arguments.length == 1) {
-            directory = arguments[0];
+        CommandResult commandResult;
+        if (controller.containsDirectory(directoryName)) {
+            if (!dashedCommandArguments.contains(DashedCommandArgument.n)) {
+                controller.prettyPrint(directoryName);
+            }
+            commandResult = success;
+        } else {
+            commandResult = error;
+            commandResult.setSimpleMessage("Directory does not exist!");
         }
 
-        controller.prettyPrint(directory);
-
-        return success;
+        return commandResult;
     }
 
     @Override
-    CommandResult executeOnSlave(String... arguments) throws IOException {
+    CommandResult executeOnSlave() throws IOException {
         File directory = new File(directoryName);
         Map<String, Long> fileNames = new HashMap<>();
         if (directory.isDirectory()) {
@@ -90,14 +94,16 @@ class LSCommand extends Command {
     }
 
     @Override
-    boolean validateAndInitializeArguments(String... arguments) {
-        if (arguments == null || arguments.length == 0) {
-            return true;
-        } else if (arguments.length == 1) {
-            directoryName = arguments[0];
-            return true;
+    protected boolean validateSpecificArguments(List<String> arguments) {
+        return arguments.size() <= 1;
+    }
+
+    @Override
+    protected void initializeSpecificArguments(List<String> arguments) {
+        if (arguments.isEmpty()) {
+            directoryName = "";
         } else {
-            return false;
+            directoryName = arguments.get(0);
         }
     }
 }

@@ -12,19 +12,24 @@ class RMCommand extends Command {
     }
 
     @Override
-    CommandResult executeOnMaster(String... arguments) throws IOException {
+    CommandResult executeOnMaster() throws IOException {
         //TODO
         return null;
     }
 
     @Override
-    CommandResult executeOnSlave(String... arguments) throws IOException {
+    CommandResult executeOnSlave() throws IOException {
         //TODO
         return null;
     }
 
     @Override
-    boolean validateAndInitializeArguments(String... arguments) {
-        return arguments != null && arguments.length == 1;
+    protected boolean validateSpecificArguments(List<String> arguments) {
+        return arguments.size() == 1;
+    }
+
+    @Override
+    protected void initializeSpecificArguments(List<String> arguments) {
+
     }
 }

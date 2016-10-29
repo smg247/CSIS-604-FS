@@ -2,13 +2,14 @@ package filesystems.safs.commands;
 
 
 import java.io.IOException;
+import java.util.List;
 
 import static filesystems.safs.commands.CommandResult.error;
 import static filesystems.safs.commands.CommandResult.success;
 
 class HelpCommand extends Command {
     @Override
-    public CommandResult executeOnMaster(String... arguments) throws IOException {
+    public CommandResult executeOnMaster() throws IOException {
         for (CommandType commandType : CommandType.values()) {
             System.out.println(commandType.name() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
         }
@@ -17,13 +18,18 @@ class HelpCommand extends Command {
     }
 
     @Override
-    public CommandResult executeOnSlave(String... arguments) throws IOException {
+    public CommandResult executeOnSlave() throws IOException {
         // Not valid for execution on slave
         return error;
     }
 
     @Override
-    public boolean validateAndInitializeArguments(String... arguments) {
+    public boolean validateSpecificArguments(List<String> arguments) {
         return true;
+    }
+
+    @Override
+    protected void initializeSpecificArguments(List<String> arguments) {
+        // No arguments exist
     }
 }

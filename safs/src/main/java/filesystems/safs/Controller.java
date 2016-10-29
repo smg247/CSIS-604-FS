@@ -1,6 +1,7 @@
 package filesystems.safs;
 
 import filesystems.safs.commands.CommandType;
+import filesystems.safs.commands.DashedCommandArgument;
 import filesystems.safs.storageRepresentations.Directory;
 import filesystems.safs.storageRepresentations.File;
 import filesystems.safs.storageRepresentations.Node;
@@ -25,8 +26,8 @@ public class Controller {
                 for (String nodeLocation : nodeLocations) {
                     nodes.add(new Node(nodeLocation));
                 }
-                System.out.println("The Current state of the file system:");
-                CommandType.ls.executeOnMaster(); // By performing an ls here we allow the user to quickly see what their file system looks like on startup and also populate all of the nodes with their initial file info
+
+                CommandType.ls.executeOnMaster(DashedCommandArgument.n.getNameWithDash()); // By performing an ls here we populate all of the nodes with their initial file info
             } else {
                 throw new IllegalArgumentException("No Node locations were provided when initializing the Controller.");
             }
@@ -79,6 +80,14 @@ public class Controller {
             Directory intoSubDirectory = intoDirectory.addDirectory(fromSubDirectory.getName());
             unifyFiles(fromSubDirectory, intoSubDirectory);
         }
+    }
+
+    public boolean containsDirectory(String fullyQualifiedDirectoryName) {
+        return getUnifiedHomeDirectory().getDirectory(fullyQualifiedDirectoryName) != null;
+    }
+
+    public boolean containsFile(String fileName) {
+        return getUnifiedHomeDirectory().getFile(fileName) != null;
     }
 
     public boolean isContainsUpToDateFileInformation() {
