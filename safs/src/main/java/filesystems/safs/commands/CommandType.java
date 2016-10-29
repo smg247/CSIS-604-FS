@@ -69,17 +69,17 @@ public enum CommandType {
                     return command.executeOnMaster();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return CommandResult.error;
+                    return new CommandResult(CommandResult.CommandStatus.error);
                 }
             } else {
-                CommandResult commandResult = CommandResult.error;
+                CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.error);
                 commandResult.setMessages(Arrays.asList("Invalid Arguments for command!", usageDirections));
                 return commandResult;
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-            return CommandResult.error;
+            return new CommandResult(CommandResult.CommandStatus.error);
         }
     }
 
@@ -94,11 +94,11 @@ public enum CommandType {
                 }
             }
 
-            return CommandResult.error;
+            return new CommandResult(CommandResult.CommandStatus.error);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-            return CommandResult.error;
+            return new CommandResult(CommandResult.CommandStatus.error);
         }
     }
 

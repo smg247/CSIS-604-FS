@@ -3,7 +3,6 @@ package filesystems.safs;
 import filesystems.safs.commands.CommandResult;
 import filesystems.safs.commands.CommandType;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 

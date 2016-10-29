@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static filesystems.safs.commands.CommandResult.error;
-import static filesystems.safs.commands.CommandResult.success;
 
 class TouchCommand extends Command {
     private String fileName;
@@ -25,12 +23,12 @@ class TouchCommand extends Command {
             List<String> response = sendMessageToSlaveNode(node, Arrays.asList(CommandType.touch.name() + " " + fileNameForSlave));
             if (response != null) { // If we get a non-null response back we know it was successful
                 node.addFile(fileName);
-                return success;
+                return new CommandResult(CommandResult.CommandStatus.success);
             } else {
-                return error;
+                return new CommandResult(CommandResult.CommandStatus.error);
             }
         } else {
-            CommandResult commandResult = error;
+            CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.error);
             commandResult.addSingleMessage("File already exists!");
             return commandResult;
         }
@@ -44,7 +42,7 @@ class TouchCommand extends Command {
         }
         Files.createFile(path);
 
-        return success;
+        return new CommandResult(CommandResult.CommandStatus.success);
     }
 
     @Override

@@ -4,8 +4,6 @@ package filesystems.safs.commands;
 import java.io.IOException;
 import java.util.List;
 
-import static filesystems.safs.commands.CommandResult.error;
-import static filesystems.safs.commands.CommandResult.success;
 
 class HelpCommand extends Command {
     @Override
@@ -14,13 +12,13 @@ class HelpCommand extends Command {
             System.out.println(commandType.name() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
         }
 
-        return success;
+        return new CommandResult(CommandResult.CommandStatus.success);
     }
 
     @Override
     public CommandResult executeOnSlave() throws IOException {
         // Not valid for execution on slave
-        return error;
+        return new CommandResult(CommandResult.CommandStatus.error);
     }
 
     @Override

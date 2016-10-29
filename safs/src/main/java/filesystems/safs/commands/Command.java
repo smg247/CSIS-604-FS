@@ -11,8 +11,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import static filesystems.safs.commands.CommandResult.success;
-
 abstract class Command {
     protected Controller controller = Controller.CONTROLLER;
     protected List<DashedCommandArgument> dashedCommandArguments = new ArrayList<>();
@@ -34,8 +32,8 @@ abstract class Command {
 
         printWriter.println(".");
 
-        CommandResult commandResult = CommandResult.valueOf(inputReader.readLine());
-        if (success == commandResult) {
+        CommandResult commandResult = new CommandResult(inputReader.readLine());
+        if (CommandResult.CommandStatus.success == commandResult.getCommandStatus()) {
             List<String> linesOfResponse = new ArrayList<>();
             String line;
             while ((line = inputReader.readLine()) != null && !".".equals(line)) {

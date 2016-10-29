@@ -3,14 +3,21 @@ package filesystems.safs.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum CommandResult {
-    success,
-    error;
+public class CommandResult {
+    private CommandStatus commandStatus;
+    private List<String> messages;
 
-    private List<String> messages = new ArrayList<>();
+
+    public CommandResult(String commandStatus) {
+        this(CommandStatus.valueOf(commandStatus));
+    }
+
+    public CommandResult(CommandStatus commandStatus) {
+        this.commandStatus = commandStatus;
+        messages = new ArrayList<>();
+    }
 
     public void addSingleMessage(String simpleMessage) {
-        messages.clear();
         messages.add(simpleMessage);
     }
 
@@ -20,5 +27,14 @@ public enum CommandResult {
 
     public void setMessages(List<String> messages) {
         this.messages = messages;
+    }
+
+    public CommandStatus getCommandStatus() {
+        return commandStatus;
+    }
+
+    public enum CommandStatus {
+        success,
+        error;
     }
 }

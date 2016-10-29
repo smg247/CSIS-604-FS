@@ -3,8 +3,6 @@ package filesystems.safs.commands;
 import java.io.IOException;
 import java.util.List;
 
-import static filesystems.safs.commands.CommandResult.error;
-import static filesystems.safs.commands.CommandResult.success;
 
 class MVCommand extends Command {
     private String fromFileName;
@@ -14,7 +12,7 @@ class MVCommand extends Command {
     public CommandResult executeOnMaster() throws IOException {
         // Move is really just a copy followed by removing the original file
         CommandResult commandResult = CommandType.cp.executeOnMaster(new String[]{fromFileName, toFileName});
-        if (success == commandResult) {
+        if (CommandResult.CommandStatus.success == commandResult.getCommandStatus()) {
             CommandResult rmResult = CommandType.rm.executeOnMaster(fromFileName);
             return rmResult;
         } else {
@@ -25,7 +23,7 @@ class MVCommand extends Command {
     @Override
     public CommandResult executeOnSlave() throws IOException {
         // Not valid for execution on slave
-        return error;
+        return new CommandResult(CommandResult.CommandStatus.error);
     }
 
     @Override

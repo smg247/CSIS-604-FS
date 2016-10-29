@@ -7,9 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static filesystems.safs.commands.CommandResult.error;
-import static filesystems.safs.commands.CommandResult.success;
-
 class LSCommand extends Command {
     private String directoryName;
 
@@ -25,7 +22,7 @@ class LSCommand extends Command {
                         node.addFile(fileNameAndSize.fst, fileNameAndSize.snd); // Attempt to add the file to the node just in case we didn't already know about it
                     }
                 } else {
-                    return error;
+                    return new CommandResult(CommandResult.CommandStatus.error);
                 }
             }
 
@@ -37,9 +34,9 @@ class LSCommand extends Command {
             if (!dashedCommandArguments.contains(DashedCommandArgument.n)) {
                 controller.prettyPrint(directoryName);
             }
-            commandResult = success;
+            commandResult = new CommandResult(CommandResult.CommandStatus.success);
         } else {
-            commandResult = error;
+            commandResult = new CommandResult(CommandResult.CommandStatus.error);
             commandResult.addSingleMessage("Directory does not exist!");
         }
 
@@ -53,11 +50,11 @@ class LSCommand extends Command {
         if (directory.isDirectory()) {
             determineFilesInDirectory(directory, fileNames);
             List<String> relativeFileNames = convertAllFileNamesToRelativeNamesAndPrepareForMessage(directory.getName(), fileNames);
-            CommandResult commandResult = success;
+            CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.success);
             commandResult.setMessages(relativeFileNames);
             return commandResult;
         } else {
-            CommandResult commandResult = error;
+            CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.error);
             commandResult.addSingleMessage("Directory was not provided.");
             return commandResult;
         }
