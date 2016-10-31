@@ -3,27 +3,14 @@ package filesystems.safs.commandFramework.commands;
 import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.storageRepresentations.Node;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 
 class TouchCommand extends CreationCommand {
-
-    @Override
-    public CommandResult executeOnMaster() throws IOException {
-        CommandResult commandResult = CommandResult.forError();
-        if (!controller.containsFile(path)) {
-            commandResult = super.executeOnMaster();
-        } else {
-            commandResult.addSingleMessage("File already exists!");
-        }
-
-        return commandResult;
-    }
 
     @Override
     public CommandResult executeOnSlave() throws IOException {
@@ -54,5 +41,17 @@ class TouchCommand extends CreationCommand {
     @Override
     protected void notifyRespectiveNodeOfObjectAddition(Node node) {
         node.addFile(path);
+    }
+
+    @Override
+    protected CommandResult checkIfObjectAlreadyExists() {
+        CommandResult commandResult;
+        if (!controller.containsFile(path)) {
+            commandResult = CommandResult.forSuccess();
+        } else {
+            commandResult = CommandResult.forError();
+            commandResult.addSingleMessage("File already exists!");
+        }
+        return commandResult;
     }
 }

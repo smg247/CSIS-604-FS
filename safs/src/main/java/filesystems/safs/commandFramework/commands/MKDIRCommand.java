@@ -1,7 +1,6 @@
 package filesystems.safs.commandFramework.commands;
 
 import filesystems.safs.commandFramework.CommandResult;
-import filesystems.safs.commandFramework.commands.Command;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.IOException;
@@ -11,18 +10,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 class MKDIRCommand extends CreationCommand {
-
-    @Override
-    public CommandResult executeOnMaster() throws IOException {
-        CommandResult commandResult = CommandResult.forError();
-        if (!controller.containsDirectory(path)) {
-            commandResult = super.executeOnMaster();
-        } else {
-            commandResult.addSingleMessage("Directory already exists!");
-        }
-
-        return commandResult;
-    }
 
     @Override
     public CommandResult executeOnSlave() throws IOException {
@@ -49,5 +36,17 @@ class MKDIRCommand extends CreationCommand {
     @Override
     protected void notifyRespectiveNodeOfObjectAddition(Node node) {
         node.addDirectory(path);
+    }
+
+    @Override
+    protected CommandResult checkIfObjectAlreadyExists() {
+        CommandResult commandResult;
+        if (!controller.containsDirectory(path)) {
+            commandResult = CommandResult.forSuccess();
+        } else {
+            commandResult = CommandResult.forError();
+            commandResult.addSingleMessage("Directory already exists!");
+        }
+        return commandResult;
     }
 }

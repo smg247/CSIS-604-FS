@@ -4,9 +4,6 @@ import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,16 +12,21 @@ abstract class CreationCommand extends Command {
 
     @Override
     public CommandResult executeOnMaster() throws IOException {
-        Node node = controller.determineNodeToReceiveNewFileOrDirectory();
-        String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + path;
-        System.out.println("Sending " + path + " to " + node.toString() + ":" + node.getPort());
+        CommandResult commandResult = checkIfObjectAlreadyExists();
+        if (commandResult.isSuccessful()) {
+            Node node = controller.determineNodeToReceiveNewFileOrDirectory();
+            String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + path;
+            System.out.println("Sending " + path + " to " + node.toString() + ":" + node.getPort());
 
-        List<String> response = sendMessageToSlaveNode(node, Arrays.asList(getSpecificCommandType().name() + " " + pathNameForSlave));
-        if (response != null) {
-            notifyRespectiveNodeOfObjectAddition(node);
-            return CommandResult.forSuccess();
+            List<String> response = sendMessageToSlaveNode(node, Arrays.asList(getSpecificCommandType().name() + " " + pathNameForSlave));
+            if (response != null) {
+                notifyRespectiveNodeOfObjectAddition(node);
+                return CommandResult.forSuccess();
+            } else {
+                return CommandResult.forError();
+            }
         } else {
-            return CommandResult.forError();
+            return commandResult;
         }
     }
 
@@ -35,4 +37,5 @@ abstract class CreationCommand extends Command {
 
     protected abstract CommandType getSpecificCommandType();
     protected abstract void notifyRespectiveNodeOfObjectAddition(Node node);
+    protected abstract CommandResult checkIfObjectAlreadyExists();
 }
