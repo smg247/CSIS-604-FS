@@ -19,8 +19,12 @@ class CPCommand extends Command {
     }
 
     @Override
-    public boolean validateSpecificArguments(List<String> arguments) {
-        return arguments.size() == 2;
+    public CommandResult validateSpecificArguments(List<String> arguments) {
+        if (arguments.size() == 2) {
+            return CommandResult.forSuccess();
+        } else {
+            return CommandResult.forError();
+        }
     }
 
     @Override

@@ -7,10 +7,6 @@ import java.io.IOException;
 import java.util.List;
 
 class RMCommand extends Command {
-    @Override
-    protected List<String> sendMessageToSlaveNode(Node slaveNode, List<String> linesOfMessage) throws IOException {
-        return super.sendMessageToSlaveNode(slaveNode, linesOfMessage);
-    }
 
     @Override
     CommandResult executeOnMaster() throws IOException {
@@ -25,8 +21,12 @@ class RMCommand extends Command {
     }
 
     @Override
-    protected boolean validateSpecificArguments(List<String> arguments) {
-        return arguments.size() == 1;
+    protected CommandResult validateSpecificArguments(List<String> arguments) {
+        if (arguments.size() == 1) {
+            return CommandResult.forSuccess();
+        } else {
+            return CommandResult.forError();
+        }
     }
 
     @Override

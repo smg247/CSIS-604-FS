@@ -33,7 +33,7 @@ public class SlaveDriver {
                         printWriter.println(lineInMessage);
                     }
                     printWriter.println(".");
-                    System.out.println("Just recieved a commandResult of " + commandResult.getCommandStatus() + " while attempting to " + rawCommand);
+                    System.out.println("Just received a commandResult of " + commandResult.getCommandStatus() + " while attempting to " + rawCommand);
 
                 } finally {
                     System.out.println("Closing socket.");

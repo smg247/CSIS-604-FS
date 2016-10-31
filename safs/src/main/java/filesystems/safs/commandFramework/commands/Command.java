@@ -51,7 +51,7 @@ abstract class Command {
         }
     }
 
-    boolean validateAndInitializeArguments(String... arguments) {
+    CommandResult validateAndInitializeArguments(String... arguments) {
         List<String> regularArguments = new ArrayList<>();
         if (arguments != null) {
             for (String argument : arguments) {
@@ -64,17 +64,16 @@ abstract class Command {
             }
         }
 
-        if (validateSpecificArguments(regularArguments)) {
+        CommandResult commandResult = validateSpecificArguments(regularArguments);
+        if (commandResult.isSuccessful()) {
             initializeSpecificArguments(regularArguments);
-            return true;
-        } else {
-            return false;
         }
+        return commandResult;
     }
 
     abstract CommandResult executeOnMaster() throws IOException;
     abstract CommandResult executeOnSlave() throws IOException;
-    protected abstract boolean validateSpecificArguments(List<String> arguments);
+    protected abstract CommandResult validateSpecificArguments(List<String> arguments);
     protected abstract void initializeSpecificArguments(List<String> arguments);
 
 }

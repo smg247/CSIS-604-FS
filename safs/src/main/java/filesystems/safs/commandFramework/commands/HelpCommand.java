@@ -14,18 +14,18 @@ class HelpCommand extends Command {
             System.out.println(commandType.name() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
         }
 
-        return new CommandResult(CommandResult.CommandStatus.success);
+        return CommandResult.forSuccess();
     }
 
     @Override
     public CommandResult executeOnSlave() throws IOException {
         // Not valid for execution on slave
-        return new CommandResult(CommandResult.CommandStatus.error);
+        return CommandResult.forError();
     }
 
     @Override
-    public boolean validateSpecificArguments(List<String> arguments) {
-        return true;
+    public CommandResult validateSpecificArguments(List<String> arguments) {
+        return CommandResult.forSuccess();
     }
 
     @Override

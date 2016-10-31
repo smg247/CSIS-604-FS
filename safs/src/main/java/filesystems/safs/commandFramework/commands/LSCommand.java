@@ -21,10 +21,14 @@ class LSCommand extends Command {
                 if (result != null) {
                     for (String line : result) {
                         Pair<String, Long> fileNameAndSize = deserializeFileNameAndSize(line);
-                        node.addFile(fileNameAndSize.fst, fileNameAndSize.snd); // Attempt to add the file to the node just in case we didn't already know about it
+                        if (fileNameAndSize.fst.contains(".")) { // We know its a file
+                            node.addFile(fileNameAndSize.fst, fileNameAndSize.snd); // Attempt to add the file to the node just in case we didn't already know about it
+                        } else {
+                            node.addDirectory(fileNameAndSize.fst);
+                        }
                     }
                 } else {
-                    return new CommandResult(CommandResult.CommandStatus.error);
+                    return CommandResult.forError();
                 }
             }
 
@@ -36,9 +40,9 @@ class LSCommand extends Command {
             if (!dashedCommandArguments.contains(DashedCommandArgument.n)) {
                 controller.prettyPrint(directoryName);
             }
-            commandResult = new CommandResult(CommandResult.CommandStatus.success);
+            commandResult = CommandResult.forSuccess();
         } else {
-            commandResult = new CommandResult(CommandResult.CommandStatus.error);
+            commandResult = CommandResult.forError();
             commandResult.addSingleMessage("Directory does not exist!");
         }
 
@@ -48,31 +52,32 @@ class LSCommand extends Command {
     @Override
     CommandResult executeOnSlave() throws IOException {
         File directory = new File(directoryName);
-        Map<String, Long> fileNames = new HashMap<>();
+        Map<String, Long> fileAndDirectoryNames = new HashMap<>();
         if (directory.isDirectory()) {
-            determineFilesInDirectory(directory, fileNames);
-            List<String> relativeFileNames = convertAllFileNamesToRelativeNamesAndPrepareForMessage(directory.getName(), fileNames);
-            CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.success);
+            determineFilesAndSubDirectoriesInDirectory(directory, fileAndDirectoryNames);
+            List<String> relativeFileNames = convertAllFileAndDirectoryNamesToRelativeNamesAndPrepareForMessage(directory.getName(), fileAndDirectoryNames);
+            CommandResult commandResult = CommandResult.forSuccess();
             commandResult.setMessages(relativeFileNames);
             return commandResult;
         } else {
-            CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.error);
+            CommandResult commandResult = CommandResult.forError();
             commandResult.addSingleMessage("Directory was not provided.");
             return commandResult;
         }
     }
 
-    private void determineFilesInDirectory(File file, Map<String, Long> fileNameToSizeInBytes) {
+    private void determineFilesAndSubDirectoriesInDirectory(File file, Map<String, Long> fileNameToSizeInBytes) {
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
-                determineFilesInDirectory(f, fileNameToSizeInBytes);
+                fileNameToSizeInBytes.put(f.getAbsolutePath(), 0l); // The size will be ignored as we will not be tracking directory size
+                determineFilesAndSubDirectoriesInDirectory(f, fileNameToSizeInBytes);
             } else {
                 fileNameToSizeInBytes.put(f.getAbsolutePath(), f.length());
             }
         }
     }
 
-    private List<String> convertAllFileNamesToRelativeNamesAndPrepareForMessage(String relativeDirectoryName, Map<String, Long> fileNameToSizeInBytes) {
+    private List<String> convertAllFileAndDirectoryNamesToRelativeNamesAndPrepareForMessage(String relativeDirectoryName, Map<String, Long> fileNameToSizeInBytes) {
        List<String> linesInMessage = new ArrayList<>();
         for (String fileName : fileNameToSizeInBytes.keySet()) {
             int relativeDirectoryNameIndex = fileName.indexOf(relativeDirectoryName);
@@ -93,8 +98,12 @@ class LSCommand extends Command {
     }
 
     @Override
-    protected boolean validateSpecificArguments(List<String> arguments) {
-        return arguments.size() <= 1;
+    protected CommandResult validateSpecificArguments(List<String> arguments) {
+        if (arguments.size() <= 1) {
+            return CommandResult.forSuccess();
+        } else {
+            return CommandResult.forError();
+        }
     }
 
     @Override

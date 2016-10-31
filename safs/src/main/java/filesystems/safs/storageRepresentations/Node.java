@@ -38,6 +38,10 @@ public class Node implements Comparable<Node> {
         homeDirectory.addFile(fullyQualifiedPath, sizeInBytes);
     }
 
+    public void addDirectory(String fullyQualifiedPath) {
+        homeDirectory.addDirectory(fullyQualifiedPath);
+    }
+
     public Directory getHomeDirectory() {
         return homeDirectory;
     }

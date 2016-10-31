@@ -22,6 +22,17 @@ public class Directory {
 
     public Directory addDirectory(String directoryName) {
         Directory directory = null;
+        if (directoryName.endsWith("/")) { // We need to strip off the suffix /
+            directoryName = directoryName.substring(0, directoryName.length() - 1);
+        }
+
+        String restOfPath = null;
+        if (directoryName.contains("/")) {
+            String fullDirectoryName = directoryName;
+            directoryName = fullDirectoryName.substring(0, fullDirectoryName.indexOf("/"));
+            restOfPath = fullDirectoryName.substring(fullDirectoryName.indexOf("/") + 1);
+        }
+
         for (Directory dir : directories) {
             if (directoryName.equals(dir.getName())) {
                 directory = dir;
@@ -31,6 +42,10 @@ public class Directory {
         if (directory == null) {
             directory = new Directory(directoryName);
             directories.add(directory);
+        }
+
+        if (restOfPath != null) {
+            directory = directory.addDirectory(restOfPath);
         }
 
         return directory;

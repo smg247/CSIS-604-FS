@@ -63,44 +63,46 @@ public enum CommandType {
     }
 
     public CommandResult executeOnMaster(String... arguments) {
+        CommandResult commandResult = CommandResult.forError(); // Erroneous until proven successful
         try {
             Command command = commandClass.newInstance();
-            if (command.validateAndInitializeArguments(arguments)) {
+            commandResult = command.validateAndInitializeArguments(arguments);
+            if (commandResult.isSuccessful()) {
                 try {
                     return command.executeOnMaster();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return new CommandResult(CommandResult.CommandStatus.error);
+                    return CommandResult.forError();
                 }
             } else {
-                CommandResult commandResult = new CommandResult(CommandResult.CommandStatus.error);
-                commandResult.setMessages(Arrays.asList("Invalid Arguments for command!", usageDirections));
-                return commandResult;
+                commandResult.addMessages(Arrays.asList("Invalid Arguments for command!", usageDirections));
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-            return new CommandResult(CommandResult.CommandStatus.error);
         }
+
+        return commandResult;
     }
 
     public CommandResult executeOnSlave(String... arguments) {
+        CommandResult commandResult = CommandResult.forError(); // Erroneous until proven successful
         try {
             Command command = commandClass.newInstance();
-            if (command.validateAndInitializeArguments(arguments)) {
+            commandResult = command.validateAndInitializeArguments(arguments);
+            if (commandResult.isSuccessful()) {
                 try {
                     return command.executeOnSlave();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-
-            return new CommandResult(CommandResult.CommandStatus.error);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
-            return new CommandResult(CommandResult.CommandStatus.error);
         }
+
+        return commandResult;
     }
 
     public String getDescription() {

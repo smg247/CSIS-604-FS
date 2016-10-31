@@ -36,7 +36,7 @@ public class Controller {
         }
     }
 
-    public Node determineNodeToReceiveNewFile() {
+    public Node determineNodeToReceiveNewFileOrDirectory() {
         Collections.sort(nodes);
         return nodes.get(0);
     }
