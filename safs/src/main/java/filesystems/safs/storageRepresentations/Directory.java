@@ -229,14 +229,14 @@ public class Directory {
         if (!name.equals(directory.name)) {
             return false;
         }
-        return parentDirectory.equals(directory.parentDirectory);
+        return parentDirectory != null ? parentDirectory.equals(directory.parentDirectory) : directory.parentDirectory == null;
 
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + parentDirectory.hashCode();
+        result = 31 * result + (parentDirectory != null ? parentDirectory.hashCode() : 0);
         return result;
     }
 }
