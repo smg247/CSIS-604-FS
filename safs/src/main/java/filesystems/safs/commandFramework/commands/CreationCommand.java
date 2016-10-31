@@ -14,17 +14,20 @@ abstract class CreationCommand extends Command {
     public CommandResult executeOnMaster() throws IOException {
         CommandResult commandResult = checkIfObjectAlreadyExists();
         if (commandResult.isSuccessful()) {
-            Node node = controller.determineNodeToReceiveNewFileOrDirectory();
-            String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + path;
-            System.out.println("Sending " + path + " to " + node.toString() + ":" + node.getPort());
+            List<Node> nodes = controller.determineNodesToReceiveNewFileOrDirectory();
+            for (Node node : nodes) {
+                String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + path;
+                System.out.println("Sending " + path + " to " + node.toString() + ":" + node.getPort());
 
-            List<String> response = sendMessageToSlaveNode(node, Arrays.asList(getSpecificCommandType().name() + " " + pathNameForSlave));
-            if (response != null) {
-                notifyRespectiveNodeOfObjectAddition(node);
-                return CommandResult.forSuccess();
-            } else {
-                return CommandResult.forError();
+                List<String> response = sendMessageToSlaveNode(node, Arrays.asList(getSpecificCommandType().name() + " " + pathNameForSlave));
+                if (response != null) {
+                    notifyRespectiveNodeOfObjectAddition(node);
+                } else {
+                    return CommandResult.forError();
+                }
             }
+
+            return CommandResult.forSuccess();
         } else {
             return commandResult;
         }

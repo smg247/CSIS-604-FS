@@ -1,33 +1,38 @@
 package filesystems.safs.master;
 
-import filesystems.safs.commandFramework.commands.CommandType;
 import filesystems.safs.commandFramework.DashedCommandArgument;
+import filesystems.safs.commandFramework.commands.CommandType;
 import filesystems.safs.storageRepresentations.Directory;
 import filesystems.safs.storageRepresentations.File;
 import filesystems.safs.storageRepresentations.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Controller {
     public static final Controller CONTROLLER = new Controller();
     private List<Node> nodes;
-    private boolean containsUpToDateFileInformation;
+    private boolean redundantMode;
     private boolean testEnvironment;
 
 
-    public void initialize(boolean testEnvironment, String... nodeLocations) {
+    public void initialize(boolean testEnvironment) {
         if (nodes == null) {
+            ResourceBundle resourceBundle;
+            if (testEnvironment) {
+                resourceBundle = ResourceBundle.getBundle("LocalDev");
+            } else {
+                resourceBundle = ResourceBundle.getBundle("Production");
+            }
             this.testEnvironment = testEnvironment;
-            containsUpToDateFileInformation = false;
-            if (nodeLocations != null && nodeLocations.length >= 1) {
+            redundantMode = Boolean.parseBoolean(resourceBundle.getString("redundantMode"));
+            String[] nodeLocations = resourceBundle.getString("nodeLocations").split(",");
+            if (nodeLocations.length >= 1) {
                 nodes = new ArrayList<>();
                 for (String nodeLocation : nodeLocations) {
                     nodes.add(new Node(nodeLocation));
                 }
 
-                CommandType.ls.executeOnMaster(DashedCommandArgument.n.getNameWithDash()); // By performing an ls here we populate all of the nodes with their initial file info
+                obtainUpdatedFileInformation();
             } else {
                 throw new IllegalArgumentException("No Node locations were provided when initializing the Controller.");
             }
@@ -36,19 +41,35 @@ public class Controller {
         }
     }
 
-    public Node determineNodeToReceiveNewFileOrDirectory() {
-        Collections.sort(nodes);
-        return nodes.get(0);
+    public List<Node> determineNodesToReceiveNewFileOrDirectory() {
+        if (redundantMode) {
+            return nodes;
+        } else {
+            Collections.sort(nodes);
+            return Arrays.asList(nodes.get(0));
+        }
     }
 
-    public boolean doesFileExist(String fileName) {
+    public List<Node> getNodesContainingFile(String fileName) {
+        List<Node> nodesContainingFile = new ArrayList<>();
         for (Node node : nodes) {
             if (node.hasFile(fileName)) {
-                return true;
+                nodesContainingFile.add(node);
             }
         }
 
-        return false;
+        return nodesContainingFile;
+    }
+
+    public List<Node> getNodesContainingDirectory(String fullyQualifiedPath) {
+        List<Node> nodesContainingDirectory = new ArrayList<>();
+        for (Node node : nodes) {
+            if (node.hasDirectory(fullyQualifiedPath)) {
+                nodesContainingDirectory.add(node);
+            }
+        }
+
+        return nodesContainingDirectory;
     }
 
     public List<Node> getNodes() {
@@ -87,15 +108,12 @@ public class Controller {
     }
 
     public boolean containsFile(String fileName) {
-        return getUnifiedHomeDirectory().getFile(fileName) != null;
+        return getUnifiedHomeDirectory().containsFile(fileName);
     }
 
-    public boolean isContainsUpToDateFileInformation() {
-        return containsUpToDateFileInformation;
-    }
-
-    public void setContainsUpToDateFileInformation(boolean containsUpToDateFileInformation) {
-        this.containsUpToDateFileInformation = containsUpToDateFileInformation;
+    public void obtainUpdatedFileInformation() {
+        // By running an ls with no output and forcing it to get the file info from the slaves we can update the controllers info behind the scenes
+        CommandType.ls.executeOnMaster(DashedCommandArgument.n.getNameWithDash(), DashedCommandArgument.u.getNameWithDash()); // By performing an ls here we populate all of the nodes with their initial file info
     }
 
     public boolean isTestEnvironment() {

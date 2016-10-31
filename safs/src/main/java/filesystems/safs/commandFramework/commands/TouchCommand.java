@@ -13,7 +13,7 @@ import java.util.List;
 class TouchCommand extends CreationCommand {
 
     @Override
-    public CommandResult executeOnSlave() throws IOException {
+    public CommandResult executeOnSlave(List<String> additionalInformation) throws IOException {
         Path p = Paths.get(path);
         if (p.getParent() != null) {
             Files.createDirectories(p.getParent());

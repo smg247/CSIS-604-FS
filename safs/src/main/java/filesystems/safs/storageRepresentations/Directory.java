@@ -99,7 +99,12 @@ public class Directory {
         if (fileName.contains("/")) {
             String directoryName = fileName.substring(0, fileName.indexOf("/"));
             String restOfFilePath = fileName.substring(fileName.indexOf("/") + 1);
-            return getDirectory(directoryName).getFile(restOfFilePath);
+            Directory directory = getDirectory(directoryName);
+            if (directory != null) {
+                return directory.getFile(restOfFilePath);
+            } else {
+                return null;
+            }
         } else {
             for (File file : files) {
                 if (fileName.equals(file.getFileName())) {
@@ -166,7 +171,7 @@ public class Directory {
         return null; // The provided fullyQualifiedPath was not found in this directories descendants
     }
 
-    public void removeDirecotry(String fullyQualifiedPath) {
+    public void removeDirectory(String fullyQualifiedPath) {
         Directory directory = getDirectory(fullyQualifiedPath);
         if (directory != null) {
             Directory parentDirectory = directory.getParentDirectory();

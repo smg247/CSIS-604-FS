@@ -12,7 +12,7 @@ import java.util.List;
 class MKDIRCommand extends CreationCommand {
 
     @Override
-    public CommandResult executeOnSlave() throws IOException {
+    public CommandResult executeOnSlave(List<String> additionalInformation) throws IOException {
         Path p = Paths.get(path);
         Files.createDirectories(p);
         return CommandResult.forSuccess();

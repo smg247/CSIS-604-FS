@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SlaveDriver {
     public static void main(String[] args) throws IOException {
@@ -22,12 +24,13 @@ public class SlaveDriver {
                     PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
 
                     String rawCommand = inputReader.readLine();
+                    List<String> linesOfMessage = new ArrayList<>();
                     String line;
                     while ((line = inputReader.readLine()) != null && !".".equals(line)) {
-                        //TODO
+                        linesOfMessage.add(line);
                     }
 
-                    CommandResult commandResult = CommandType.executeCommand(rawCommand, false);
+                    CommandResult commandResult = CommandType.executeCommand(rawCommand, false, linesOfMessage);
                     printWriter.println(commandResult.getCommandStatus().name());
                     for (String lineInMessage : commandResult.getMessages()) {
                         printWriter.println(lineInMessage);

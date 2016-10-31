@@ -14,7 +14,7 @@ class LSCommand extends Command {
 
     @Override
     CommandResult executeOnMaster() throws IOException {
-        if (!controller.isContainsUpToDateFileInformation()) {
+        if (dashedCommandArguments.contains(DashedCommandArgument.u)) {
             for (Node node : controller.getNodes()) {
                 String message = CommandType.ls.name() + " " + node.getFullyQualifiedHomeDirectoryName() + (directoryName != null ? directoryName : "");
                 List<String> result = sendMessageToSlaveNode(node, Arrays.asList(message));
@@ -31,8 +31,6 @@ class LSCommand extends Command {
                     return CommandResult.forError();
                 }
             }
-
-            controller.setContainsUpToDateFileInformation(true); // We will no longer need to reach out to the slaves in order to perform an ls or know what files they contain
         }
 
         CommandResult commandResult;
@@ -50,7 +48,7 @@ class LSCommand extends Command {
     }
 
     @Override
-    CommandResult executeOnSlave() throws IOException {
+    CommandResult executeOnSlave(List<String> additionalInformation) throws IOException {
         File directory = new File(directoryName);
         Map<String, Long> fileAndDirectoryNames = new HashMap<>();
         if (directory.isDirectory()) {
@@ -66,7 +64,7 @@ class LSCommand extends Command {
         }
     }
 
-    private void determineFilesAndSubDirectoriesInDirectory(File file, Map<String, Long> fileNameToSizeInBytes) {
+    private static void determineFilesAndSubDirectoriesInDirectory(File file, Map<String, Long> fileNameToSizeInBytes) {
         for (File f : file.listFiles()) {
             if (f.isDirectory()) {
                 fileNameToSizeInBytes.put(f.getAbsolutePath(), 0l); // The size will be ignored as we will not be tracking directory size
@@ -77,7 +75,7 @@ class LSCommand extends Command {
         }
     }
 
-    private List<String> convertAllFileAndDirectoryNamesToRelativeNamesAndPrepareForMessage(String relativeDirectoryName, Map<String, Long> fileNameToSizeInBytes) {
+    private static List<String> convertAllFileAndDirectoryNamesToRelativeNamesAndPrepareForMessage(String relativeDirectoryName, Map<String, Long> fileNameToSizeInBytes) {
        List<String> linesInMessage = new ArrayList<>();
         for (String fileName : fileNameToSizeInBytes.keySet()) {
             int relativeDirectoryNameIndex = fileName.indexOf(relativeDirectoryName);
@@ -88,11 +86,11 @@ class LSCommand extends Command {
         return linesInMessage;
     }
 
-    private String serializeFileNameAndSize(String fileName, long sizeInBytes) {
+    private static String serializeFileNameAndSize(String fileName, long sizeInBytes) {
         return fileName + " " + sizeInBytes;
     }
 
-    private Pair<String, Long> deserializeFileNameAndSize(String fileNameAndSize) {
+    private static Pair<String, Long> deserializeFileNameAndSize(String fileNameAndSize) {
         String[] split = fileNameAndSize.split("\\s+");
         return new Pair<>(split[0], Long.parseLong(split[1]));
     }

@@ -1,8 +1,8 @@
 package filesystems.safs.commandFramework.commands;
 
-import filesystems.safs.master.Controller;
 import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.commandFramework.DashedCommandArgument;
+import filesystems.safs.master.Controller;
 import filesystems.safs.storageRepresentations.Node;
 
 import java.io.BufferedReader;
@@ -35,7 +35,7 @@ abstract class Command {
         printWriter.println(".");
 
         CommandResult commandResult = new CommandResult(inputReader.readLine());
-        if (CommandResult.CommandStatus.success == commandResult.getCommandStatus()) {
+        if (commandResult.isSuccessful()) {
             List<String> linesOfResponse = new ArrayList<>();
             String line;
             while ((line = inputReader.readLine()) != null && !".".equals(line)) {
@@ -72,7 +72,7 @@ abstract class Command {
     }
 
     abstract CommandResult executeOnMaster() throws IOException;
-    abstract CommandResult executeOnSlave() throws IOException;
+    abstract CommandResult executeOnSlave(List<String> additionalInformation) throws IOException;
     protected abstract CommandResult validateSpecificArguments(List<String> arguments);
     protected abstract void initializeSpecificArguments(List<String> arguments);
 

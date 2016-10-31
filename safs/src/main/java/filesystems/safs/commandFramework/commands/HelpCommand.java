@@ -18,7 +18,7 @@ class HelpCommand extends Command {
     }
 
     @Override
-    public CommandResult executeOnSlave() throws IOException {
+    public CommandResult executeOnSlave(List<String> additionalInformation) throws IOException {
         // Not valid for execution on slave
         return CommandResult.forError();
     }

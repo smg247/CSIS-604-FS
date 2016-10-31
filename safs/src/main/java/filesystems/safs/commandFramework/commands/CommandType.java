@@ -5,7 +5,9 @@ import com.sun.istack.internal.Nullable;
 import filesystems.safs.commandFramework.CommandResult;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public enum CommandType {
     help(HelpCommand.class, "Usage information", "Simply use the command to receive all possible commands and their usages"),
@@ -29,6 +31,10 @@ public enum CommandType {
     }
 
     public static CommandResult executeCommand(String rawCommand, boolean isMaster) {
+        return executeCommand(rawCommand, isMaster, new ArrayList<>());
+    }
+
+    public static CommandResult executeCommand(String rawCommand, boolean isMaster, List<String> additionalInformationForCommand) {
         String[] commandWithArguments = rawCommand.split("\\s+");
         CommandType commandType = null;
         if (commandWithArguments.length > 0) {
@@ -47,7 +53,7 @@ public enum CommandType {
         if (isMaster) {
             return commandType.executeOnMaster(arguments);
         } else {
-            return commandType.executeOnSlave(arguments);
+            return commandType.executeOnSlave(additionalInformationForCommand, arguments);
         }
     }
 
@@ -85,14 +91,14 @@ public enum CommandType {
         return commandResult;
     }
 
-    public CommandResult executeOnSlave(String... arguments) {
+    public CommandResult executeOnSlave(List<String> additionalInformation, String... arguments) {
         CommandResult commandResult = CommandResult.forError(); // Erroneous until proven successful
         try {
             Command command = commandClass.newInstance();
             commandResult = command.validateAndInitializeArguments(arguments);
             if (commandResult.isSuccessful()) {
                 try {
-                    return command.executeOnSlave();
+                    return command.executeOnSlave(additionalInformation);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -54,6 +54,22 @@ public class Node implements Comparable<Node> {
         return homeDirectory.containsFile(fileName);
     }
 
+    public boolean hasDirectory(String fullyQualifiedPath) {
+        return homeDirectory.containsDirectory(fullyQualifiedPath);
+    }
+
+    public void removeFile(String fileName) {
+        homeDirectory.removeFile(fileName);
+    }
+
+    public void removeDirectory(String fullyQualifiedPath) {
+        homeDirectory.removeDirectory(fullyQualifiedPath);
+    }
+
+    public File getFile(String fileName) {
+        return homeDirectory.getFile(fileName);
+    }
+
     @Override
     public int compareTo(Node o) {
         int differenceInBytesStored = homeDirectory.getBytesStored() - o.homeDirectory.getBytesStored();
