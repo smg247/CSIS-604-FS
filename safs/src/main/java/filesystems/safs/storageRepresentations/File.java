@@ -2,11 +2,13 @@ package filesystems.safs.storageRepresentations;
 
 public class File {
     private String fileName;
+    private Directory parentDirectory;
     private long sizeInBytes;
 
 
-    File(String fileName, long sizeInBytes) {
+    File(String fileName, Directory parentDirectory, long sizeInBytes) {
         this.fileName = fileName;
+        this.parentDirectory = parentDirectory;
         this.sizeInBytes = sizeInBytes;
     }
 
@@ -16,6 +18,10 @@ public class File {
 
     public String getFileName() {
         return fileName;
+    }
+
+    public Directory getParentDirectory() {
+        return parentDirectory;
     }
 
     public long getSizeInBytes() {

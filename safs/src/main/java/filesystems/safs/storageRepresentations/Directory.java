@@ -2,16 +2,23 @@ package filesystems.safs.storageRepresentations;
 
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Directory {
     private String name;
+    private Directory parentDirectory; // Will be null if this is the home Directory
     private Set<Directory> directories;
     private Set<File> files;
 
 
     public Directory(String name) {
+        this(name, null);
+    }
+
+    public Directory(String name, Directory parentDirectory) {
         this.name = name;
+        this.parentDirectory = parentDirectory;
         directories = new HashSet<>();
         files = new HashSet<>();
     }
@@ -40,7 +47,7 @@ public class Directory {
         }
 
         if (directory == null) {
-            directory = new Directory(directoryName);
+            directory = new Directory(directoryName, this);
             directories.add(directory);
         }
 
@@ -62,7 +69,7 @@ public class Directory {
             Directory directory = addDirectory(directoryName);
             directory.addFile(restOfFilePath, sizeInBytes);
         } else {
-            files.add(new File(fileName, sizeInBytes));
+            files.add(new File(fileName, this, sizeInBytes));
         }
 
     }
@@ -104,6 +111,23 @@ public class Directory {
         return null;
     }
 
+    public void removeFile(String fileName) {
+        File file = getFile(fileName);
+        if (file != null) {
+            parentDirectory = file.getParentDirectory();
+            if (parentDirectory != null) {
+                Iterator<File> iterator = parentDirectory.getFiles().iterator();
+                while (iterator.hasNext()) {
+                    File fileOfParentDirectory = iterator.next();
+                    if (fileOfParentDirectory.equals(file)) {
+                        iterator.remove();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     public int getNumberOfIncludedFiles() {
         int size = files.size();
 
@@ -142,6 +166,23 @@ public class Directory {
         return null; // The provided fullyQualifiedPath was not found in this directories descendants
     }
 
+    public void removeDirecotry(String fullyQualifiedPath) {
+        Directory directory = getDirectory(fullyQualifiedPath);
+        if (directory != null) {
+            Directory parentDirectory = directory.getParentDirectory();
+            if (parentDirectory != null) {
+                Iterator<Directory> iterator = parentDirectory.getDirectories().iterator();
+                while (iterator.hasNext()) {
+                    Directory parentsSubDirectory = iterator.next();
+                    if (parentsSubDirectory.equals(directory)) {
+                        iterator.remove();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
     public void prettyPrint() {
         prettyPrint(0);
     }
@@ -168,5 +209,34 @@ public class Directory {
         }
 
         return spaces.toString();
+    }
+
+    public Directory getParentDirectory() {
+        return parentDirectory;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Directory directory = (Directory) o;
+
+        if (!name.equals(directory.name)) {
+            return false;
+        }
+        return parentDirectory.equals(directory.parentDirectory);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + parentDirectory.hashCode();
+        return result;
     }
 }
