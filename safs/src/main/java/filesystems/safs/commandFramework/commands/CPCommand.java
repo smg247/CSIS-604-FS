@@ -149,11 +149,11 @@ class CPCommand extends Command {
         return CommandResult.forSuccess();
     }
 
-    private CommandResult copyFromOutsideFileSystemOnSlave(List<String> additionalFileInformation) throws IOException {
+    private CommandResult copyFromOutsideFileSystemOnSlave(List<String> fileBytes) throws IOException {
         File file = new File(destinationPath);
-        byte[] bytes = new byte[additionalFileInformation.size()];
-        for (int i = 0; i < additionalFileInformation.size(); i++) {
-            bytes[i] = new Byte(additionalFileInformation.get(i));
+        byte[] bytes = new byte[fileBytes.size()];
+        for (int i = 0; i < fileBytes.size(); i++) {
+            bytes[i] = new Byte(fileBytes.get(i));
         }
 
         if (file.getParent() != null) {

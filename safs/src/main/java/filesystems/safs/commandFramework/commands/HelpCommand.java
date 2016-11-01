@@ -11,7 +11,7 @@ class HelpCommand extends Command {
     @Override
     public CommandResult executeOnMaster() throws IOException {
         for (CommandType commandType : CommandType.values()) {
-            System.out.println(commandType.name() + " - " + commandType.getDescription() + " - Usage: " + commandType.getUsageDirections());
+            System.out.println(commandType.createFullUsageDirections());
         }
 
         return CommandResult.forSuccess();

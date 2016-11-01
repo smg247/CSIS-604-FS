@@ -3,6 +3,7 @@ package filesystems.safs.commandFramework.commands;
 
 import com.sun.istack.internal.Nullable;
 import filesystems.safs.commandFramework.CommandResult;
+import filesystems.safs.commandFramework.DashedCommandArgument;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,5 +118,20 @@ public enum CommandType {
 
     public String getUsageDirections() {
         return usageDirections;
+    }
+
+    public String createFullUsageDirections() {
+        StringBuilder fullUsageDirections = new StringBuilder(name() + " - " + description + " - Usage: " + usageDirections);
+        List<DashedCommandArgument> availableArgumentsForCommandType = DashedCommandArgument.getAvailableArgumentsForCommandType(this);
+        if (!availableArgumentsForCommandType.isEmpty()) {
+            fullUsageDirections.append("\n\tAvailable dashed arguments:");
+            for (DashedCommandArgument dashedCommandArgument : availableArgumentsForCommandType) {
+                fullUsageDirections.append(" ");
+                String dashedArgumentUsage = dashedCommandArgument.getNameWithDash() + " " + dashedCommandArgument.getInformation();
+                fullUsageDirections.append(dashedArgumentUsage);
+            }
+        }
+
+        return fullUsageDirections.toString();
     }
 }
