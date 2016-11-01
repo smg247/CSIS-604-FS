@@ -10,7 +10,7 @@ public enum DashedCommandArgument {
     l("Act within the File System (Default).", CommandType.cp), // Local
     r("Act from outside the File System.", CommandType.cp), // Remote
     u("Force the File System to update its information.", CommandType.ls), // Update file information
-    n("No output, this is unadvertised argument."); // No output
+    n("No output to the console will happen with this command.", CommandType.ls); // No output
 
 
     private String information;
@@ -31,6 +31,17 @@ public enum DashedCommandArgument {
         }
 
         return dashedCommandArguments;
+    }
+
+    public static DashedCommandArgument fromString(String rawDashedCommandArgument) {
+        rawDashedCommandArgument = rawDashedCommandArgument.replace("-", "");
+        for (DashedCommandArgument dashedCommandArgument : values()) {
+            if (rawDashedCommandArgument.equals(dashedCommandArgument.name())) {
+                return dashedCommandArgument;
+            }
+        }
+
+        return null;
     }
 
     public String getNameWithDash() {

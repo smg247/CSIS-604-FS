@@ -19,7 +19,7 @@ abstract class CreationCommand extends Command {
                 String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + path;
                 System.out.println("Sending " + path + " to " + node.toString() + ":" + node.getPort());
 
-                List<String> response = sendMessageToSlaveNode(node, Arrays.asList(getSpecificCommandType().name() + " " + pathNameForSlave));
+                List<String> response = sendMessageToSlaveNode(node, Arrays.asList(commandType.name() + " " + pathNameForSlave));
                 if (response != null) {
                     notifyRespectiveNodeOfObjectAddition(node);
                 } else {
@@ -38,7 +38,6 @@ abstract class CreationCommand extends Command {
         path = arguments.get(0);
     }
 
-    protected abstract CommandType getSpecificCommandType();
     protected abstract void notifyRespectiveNodeOfObjectAddition(Node node);
     protected abstract CommandResult checkIfObjectAlreadyExists();
 }

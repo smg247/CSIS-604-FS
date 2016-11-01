@@ -34,11 +34,6 @@ class TouchCommand extends CreationCommand {
     }
 
     @Override
-    protected CommandType getSpecificCommandType() {
-        return CommandType.touch;
-    }
-
-    @Override
     protected void notifyRespectiveNodeOfObjectAddition(Node node) {
         node.addFile(path);
     }

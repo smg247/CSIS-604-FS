@@ -16,6 +16,14 @@ import java.util.List;
 abstract class Command {
     protected Controller controller = Controller.CONTROLLER;
     protected List<DashedCommandArgument> dashedCommandArguments = new ArrayList<>();
+    protected CommandType commandType;
+
+
+    static Command forCommandType(CommandType commandType) throws Exception {
+        Command command = commandType.getCommandClass().newInstance();
+        command.setCommandType(commandType);
+        return command;
+    }
 
     /**
      * @param slaveNode         Node to send the message to
@@ -53,11 +61,14 @@ abstract class Command {
 
     CommandResult validateAndInitializeArguments(String... arguments) {
         List<String> regularArguments = new ArrayList<>();
+        List<DashedCommandArgument> availableArgumentsForCommandType = DashedCommandArgument.getAvailableArgumentsForCommandType(commandType);
         if (arguments != null) {
             for (String argument : arguments) {
                 if (argument.contains("-")) {
-                    DashedCommandArgument dashedCommandArgument = DashedCommandArgument.valueOf(argument.substring(1));
-                    dashedCommandArguments.add(dashedCommandArgument);
+                    DashedCommandArgument dashedCommandArgument = DashedCommandArgument.fromString(argument);
+                    if (availableArgumentsForCommandType.contains(dashedCommandArgument)) {
+                        dashedCommandArguments.add(dashedCommandArgument);
+                    }
                 } else {
                     regularArguments.add(argument);
                 }
@@ -69,6 +80,10 @@ abstract class Command {
             initializeSpecificArguments(regularArguments);
         }
         return commandResult;
+    }
+
+    void setCommandType(CommandType commandType) {
+        this.commandType = commandType;
     }
 
     abstract CommandResult executeOnMaster() throws IOException;

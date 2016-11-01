@@ -72,7 +72,7 @@ public enum CommandType {
     public CommandResult executeOnMaster(String... arguments) {
         CommandResult commandResult = CommandResult.forError(); // Erroneous until proven successful
         try {
-            Command command = commandClass.newInstance();
+            Command command = Command.forCommandType(this);
             commandResult = command.validateAndInitializeArguments(arguments);
             if (commandResult.isSuccessful()) {
                 try {
@@ -95,7 +95,7 @@ public enum CommandType {
     public CommandResult executeOnSlave(List<String> additionalInformation, String... arguments) {
         CommandResult commandResult = CommandResult.forError(); // Erroneous until proven successful
         try {
-            Command command = commandClass.newInstance();
+            Command command = Command.forCommandType(this);
             commandResult = command.validateAndInitializeArguments(arguments);
             if (commandResult.isSuccessful()) {
                 try {
@@ -112,12 +112,8 @@ public enum CommandType {
         return commandResult;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getUsageDirections() {
-        return usageDirections;
+    public Class<? extends Command> getCommandClass() {
+        return commandClass;
     }
 
     public String createFullUsageDirections() {

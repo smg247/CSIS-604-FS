@@ -29,11 +29,6 @@ class MKDIRCommand extends CreationCommand {
     }
 
     @Override
-    protected CommandType getSpecificCommandType() {
-        return CommandType.mkdir;
-    }
-
-    @Override
     protected void notifyRespectiveNodeOfObjectAddition(Node node) {
         node.addDirectory(path);
     }
