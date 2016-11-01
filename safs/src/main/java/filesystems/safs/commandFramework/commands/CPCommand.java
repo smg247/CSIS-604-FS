@@ -71,11 +71,36 @@ class CPCommand extends Command {
     }
 
     private CommandResult copyFromOutsideFileSystem() throws IOException {
-        return copyFileFromOutsideFileSystem();
+        if  (workingWithFiles(originalPath, destinationPath)) {
+            return copyFileFromOutsideFileSystem(originalPath, destinationPath);
+        } else {
+            return copyDirectoryFromOutsideFileSystem(originalPath);
+        }
+    }
+    
+    private CommandResult copyDirectoryFromOutsideFileSystem(String directoryPath) throws IOException {
+        File directoryFile = new File(directoryPath);
+
+        File[] filesInDirectory = directoryFile.listFiles();
+        if (filesInDirectory != null && filesInDirectory.length > 0) {
+            for (File file : filesInDirectory) {
+                if (file.isDirectory()) {
+                    copyDirectoryFromOutsideFileSystem(file.getPath());
+                } else {
+                    String destinationFilePath = destinationPath + file.getPath().substring(file.getPath().indexOf("/"));
+                    copyFileFromOutsideFileSystem(file.getPath(), destinationFilePath);
+                }
+            }
+        } else {
+            // As there are no files or sub directories in this directory we must copy it directly
+            String destinationDirectoryPath = destinationPath + directoryFile.getPath().substring(directoryFile.getPath().indexOf("/"));
+            return sendMessageContainingRemoteFileOrDirectoryInformation(directoryFile.getPath(), destinationDirectoryPath, new ArrayList<>());
+        }
+        return CommandResult.forSuccess();
     }
 
-    private CommandResult copyFileFromOutsideFileSystem() throws IOException {
-        byte[] bytesOfFile = Files.readAllBytes(Paths.get(originalPath));
+    private CommandResult copyFileFromOutsideFileSystem(String fileName, String destinationFileName) throws IOException {
+        byte[] bytesOfFile = Files.readAllBytes(Paths.get(fileName));
         List<String> byteList = new ArrayList<>();
         if (bytesOfFile != null) {
             for (byte byteOfFile : bytesOfFile){
@@ -83,11 +108,15 @@ class CPCommand extends Command {
             }
         }
 
+        return sendMessageContainingRemoteFileOrDirectoryInformation(fileName, destinationFileName, byteList);
+    }
+
+    private CommandResult sendMessageContainingRemoteFileOrDirectoryInformation(String fileOrDirectoryName, String destinationFileOrDirectoryName, List<String> byteList) throws IOException {
         List<Node> nodes = controller.determineNodesToReceiveNewFileOrDirectory();
         for (Node node : nodes) {
-            String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + destinationPath;
+            String pathNameForSlave = node.getFullyQualifiedHomeDirectoryName() + destinationFileOrDirectoryName;
             List<String> messageForSlaveNodes = new ArrayList<>();
-            messageForSlaveNodes.add(CommandType.cp.name() + " " + DashedCommandArgument.r.getNameWithDash() + " " + originalPath + " " + pathNameForSlave);
+            messageForSlaveNodes.add(CommandType.cp.name() + " " + DashedCommandArgument.r.getNameWithDash() + " " + fileOrDirectoryName + " " + pathNameForSlave);
             messageForSlaveNodes.addAll(byteList);
             List<String> response = sendMessageToSlaveNode(node, messageForSlaveNodes);
             if (response == null) {
@@ -125,6 +154,10 @@ class CPCommand extends Command {
         byte[] bytes = new byte[additionalFileInformation.size()];
         for (int i = 0; i < additionalFileInformation.size(); i++) {
             bytes[i] = new Byte(additionalFileInformation.get(i));
+        }
+
+        if (file.getParent() != null) {
+            Files.createDirectories(Paths.get(file.getParent()));
         }
 
         FileUtils.writeByteArrayToFile(file, bytes);
