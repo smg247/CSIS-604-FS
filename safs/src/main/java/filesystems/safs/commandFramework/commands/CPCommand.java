@@ -70,6 +70,10 @@ class CPCommand extends Command {
         return CommandResult.forSuccess();
     }
 
+    /*
+    The following methods are used to copy a file from outside the File System.
+     */
+
     private CommandResult copyFromOutsideFileSystem() throws IOException {
         if  (workingWithFiles(originalPath, destinationPath)) {
             return copyFileFromOutsideFileSystem(originalPath, destinationPath);
@@ -127,6 +131,9 @@ class CPCommand extends Command {
         return CommandResult.forSuccess();
     }
 
+    /*
+        The Following Methods are used to execute the command on the Slave node.
+     */
     @Override
     public CommandResult executeOnSlave(List<String> additionalInformation) throws IOException {
         if (dashedCommandArguments.contains(DashedCommandArgument.l) || !dashedCommandArguments.contains(DashedCommandArgument.r)) {
@@ -163,6 +170,10 @@ class CPCommand extends Command {
         FileUtils.writeByteArrayToFile(file, bytes);
         return CommandResult.forSuccess();
     }
+
+    /*
+    The following methods are used for validation and initializing arguments.
+     */
 
     @Override
     public CommandResult validateSpecificArguments(List<String> arguments) {
