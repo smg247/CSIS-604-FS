@@ -1,7 +1,6 @@
 package filesystems.safs.commandFramework.commands;
 
 
-import com.sun.istack.internal.Nullable;
 import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.commandFramework.DashedCommandArgument;
 
@@ -20,7 +19,6 @@ public enum CommandType {
     rm(RMCommand.class, "Removes the file or directory supplied", "Supply the file name or directory name to remove. ex: rm sample.txt");
 
 
-    @Nullable
     private static CommandType getCommandTypeByName(String name) {
         for (CommandType commandType : values()) {
             if (name.equals(commandType.name())) {
