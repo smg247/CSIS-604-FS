@@ -77,7 +77,7 @@ public class Controller {
     }
 
     public void prettyPrint(String fullyQualifiedDirectoryName) {
-        if (fullyQualifiedDirectoryName.endsWith("/")) {
+        if (fullyQualifiedDirectoryName.endsWith(java.io.File.separator)) {
             fullyQualifiedDirectoryName = fullyQualifiedDirectoryName.substring(0, fullyQualifiedDirectoryName.length() - 1);
         }
         Directory unifiedHomeDirectory = getUnifiedHomeDirectory();

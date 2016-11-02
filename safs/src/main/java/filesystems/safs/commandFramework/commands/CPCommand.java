@@ -91,13 +91,13 @@ class CPCommand extends Command {
                 if (file.isDirectory()) {
                     copyDirectoryFromOutsideFileSystem(file.getPath());
                 } else {
-                    String destinationFilePath = destinationPath + file.getPath().substring(file.getPath().indexOf("/"));
+                    String destinationFilePath = destinationPath + file.getPath().substring(file.getPath().indexOf(File.separator));
                     copyFileFromOutsideFileSystem(file.getPath(), destinationFilePath);
                 }
             }
         } else {
             // As there are no files or sub directories in this directory we must copy it directly
-            String destinationDirectoryPath = destinationPath + directoryFile.getPath().substring(directoryFile.getPath().indexOf("/"));
+            String destinationDirectoryPath = destinationPath + directoryFile.getPath().substring(directoryFile.getPath().indexOf(File.separator));
             return sendMessageContainingRemoteFileOrDirectoryInformation(directoryFile.getPath(), destinationDirectoryPath, new ArrayList<>());
         }
         return CommandResult.forSuccess();

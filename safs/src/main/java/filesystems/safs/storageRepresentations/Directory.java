@@ -29,15 +29,15 @@ public class Directory {
 
     public Directory addDirectory(String directoryName) {
         Directory directory = null;
-        if (directoryName.endsWith("/")) { // We need to strip off the suffix /
+        if (directoryName.endsWith(java.io.File.separator)) { // We need to strip off the suffix /
             directoryName = directoryName.substring(0, directoryName.length() - 1);
         }
 
         String restOfPath = null;
-        if (directoryName.contains("/")) {
+        if (directoryName.contains(java.io.File.separator)) {
             String fullDirectoryName = directoryName;
-            directoryName = fullDirectoryName.substring(0, fullDirectoryName.indexOf("/"));
-            restOfPath = fullDirectoryName.substring(fullDirectoryName.indexOf("/") + 1);
+            directoryName = fullDirectoryName.substring(0, fullDirectoryName.indexOf(java.io.File.separator));
+            restOfPath = fullDirectoryName.substring(fullDirectoryName.indexOf(java.io.File.separator) + 1);
         }
 
         for (Directory dir : directories) {
@@ -63,9 +63,9 @@ public class Directory {
     }
 
     public void addFile(String fileName, long sizeInBytes) {
-        if (fileName.contains("/")) {
-            String directoryName = fileName.substring(0, fileName.indexOf("/"));
-            String restOfFilePath = fileName.substring(fileName.indexOf("/") + 1);
+        if (fileName.contains(java.io.File.separator)) {
+            String directoryName = fileName.substring(0, fileName.indexOf(java.io.File.separator));
+            String restOfFilePath = fileName.substring(fileName.indexOf(java.io.File.separator) + 1);
             Directory directory = addDirectory(directoryName);
             directory.addFile(restOfFilePath, sizeInBytes);
         } else {
@@ -96,9 +96,9 @@ public class Directory {
     }
 
     public File getFile(String fileName) {
-        if (fileName.contains("/")) {
-            String directoryName = fileName.substring(0, fileName.indexOf("/"));
-            String restOfFilePath = fileName.substring(fileName.indexOf("/") + 1);
+        if (fileName.contains(java.io.File.separator)) {
+            String directoryName = fileName.substring(0, fileName.indexOf(java.io.File.separator));
+            String restOfFilePath = fileName.substring(fileName.indexOf(java.io.File.separator) + 1);
             Directory directory = getDirectory(directoryName);
             if (directory != null) {
                 return directory.getFile(restOfFilePath);
@@ -152,8 +152,8 @@ public class Directory {
             return this;
         }
         String directoryName;
-        if (fullyQualifiedPath.contains("/")) {
-            directoryName = fullyQualifiedPath.substring(0, fullyQualifiedPath.indexOf("/"));
+        if (fullyQualifiedPath.contains(java.io.File.separator)) {
+            directoryName = fullyQualifiedPath.substring(0, fullyQualifiedPath.indexOf(java.io.File.separator));
         } else {
             directoryName = fullyQualifiedPath;
         }
@@ -162,7 +162,7 @@ public class Directory {
                 if (directoryName.equals(fullyQualifiedPath)) {
                     return directory;
                 } else {
-                    String restOfFilePath = fullyQualifiedPath.substring(fullyQualifiedPath.indexOf("/") + 1);
+                    String restOfFilePath = fullyQualifiedPath.substring(fullyQualifiedPath.indexOf(java.io.File.separator) + 1);
                     return directory.getDirectory(restOfFilePath);
                 }
             }
@@ -194,7 +194,7 @@ public class Directory {
 
     private void prettyPrint(int nestingLevel) {
         if (nestingLevel > 0) { // We don't really want to print this directory if its the root of our printing
-            System.out.println(determineSpacesFromNestingLevel(nestingLevel) + name + "/");
+            System.out.println(determineSpacesFromNestingLevel(nestingLevel) + name + java.io.File.separator);
         }
         nestingLevel++;
 

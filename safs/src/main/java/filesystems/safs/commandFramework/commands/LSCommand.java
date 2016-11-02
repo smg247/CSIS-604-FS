@@ -1,9 +1,9 @@
 package filesystems.safs.commandFramework.commands;
 
-import com.sun.tools.javac.util.Pair;
 import filesystems.safs.commandFramework.CommandResult;
 import filesystems.safs.commandFramework.DashedCommandArgument;
 import filesystems.safs.storageRepresentations.Node;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,10 +21,10 @@ class LSCommand extends Command {
                 if (result != null) {
                     for (String line : result) {
                         Pair<String, Long> fileNameAndSize = deserializeFileNameAndSize(line);
-                        if (fileNameAndSize.fst.contains(".")) { // We know its a file
-                            node.addFile(fileNameAndSize.fst, fileNameAndSize.snd); // Attempt to add the file to the node just in case we didn't already know about it
+                        if (fileNameAndSize.getKey().contains(".")) { // We know its a file
+                            node.addFile(fileNameAndSize.getKey(), fileNameAndSize.getValue()); // Attempt to add the file to the node just in case we didn't already know about it
                         } else {
-                            node.addDirectory(fileNameAndSize.fst);
+                            node.addDirectory(fileNameAndSize.getKey());
                         }
                     }
                 } else {

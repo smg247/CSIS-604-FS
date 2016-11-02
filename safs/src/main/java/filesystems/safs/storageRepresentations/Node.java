@@ -47,7 +47,7 @@ public class Node implements Comparable<Node> {
     }
 
     public String getFullyQualifiedHomeDirectoryName() {
-        return homeDirectory.getName() + "/";
+        return homeDirectory.getName() + java.io.File.separator;
     }
 
     public boolean hasFile(String fileName) {
