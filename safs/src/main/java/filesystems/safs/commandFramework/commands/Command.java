@@ -54,7 +54,8 @@ abstract class Command {
 
             return linesOfResponse;
         } else {
-            System.out.println("ERROR"); //TODO: better error messaging
+            System.out.println("Unrecoverable error in node: " + slaveNode.getAddress() + ":" + slaveNode.getPort());
+            System.exit(1);
             return null;
         }
     }

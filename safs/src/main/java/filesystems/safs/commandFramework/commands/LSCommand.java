@@ -57,6 +57,8 @@ class LSCommand extends Command {
             CommandResult commandResult = CommandResult.forSuccess();
             commandResult.setMessages(relativeFileNames);
             return commandResult;
+        } else if (!directory.exists()) { // If the directory does not exist it is most likely due to the home directory not yet existing on this node as otherwise the validation logic would have stopped the command before it got to here
+            return CommandResult.forSuccess();
         } else {
             CommandResult commandResult = CommandResult.forError();
             commandResult.addSingleMessage("Directory was not provided.");
